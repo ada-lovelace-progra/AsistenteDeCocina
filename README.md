@@ -4,6 +4,9 @@ Proyecto de IoT para la materia Sistemas Operativos Avanzádos de la Universidad
 ### Integrantes
 - Tamashiro, Santiago
 - Vogel, Facundo
+- Robles Wagner, Sebastián 
+- Gómez Markowicz, Federico
+- Gronski, Sebastián 
 
 ### Proyecto
 El propósito del dispositivo es ayudar a administrar al usuario las existencias de un determinado producto (Ej: Arroz Amarillo), 
