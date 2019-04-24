@@ -21,10 +21,10 @@ El propósito del dispositivo es elaborar jugo utilizando agua y jugo en polvo. 
 
 ### Sensores Digitales
 - [Sensor Obstaculos Infrarrojo](https://articulo.mercadolibre.com.ar/MLA-705882945-modulo-detector-sensor-obstaculos-infrarrojo-arduino-nubbeo-_JM)
-- [Sensor Na-nc Nivel De Agua 5226-1p Flotador 52mm](https://articulo.mercadolibre.com.ar/MLA-705882945-modulo-detector-sensor-obstaculos-infrarrojo-arduino-nubbeo-_JM)
+- [Sensor Na-nc Nivel De Agua 5226-1p Flotador 52mm](https://articulo.mercadolibre.com.ar/MLA-693646871-sensor-na-nc-nivel-de-agua-5226-1p-flotador-52mm-arduin-mona-_JM)
 
 ### Actuadores
 - [Bomba De Agua Sumergible 3v 5v Dc](https://articulo.mercadolibre.com.ar/MLA-780623036-mini-bomba-de-agua-sumergible-3v-5v-dc-armodlpump-_JM?quantity=1)
 - [Motor Servo Dm-s0090d 360°](https://articulo.mercadolibre.com.ar/MLA-703754033-motor-servo-dm-s0090d-360-rotacion-continua-16kg-arduino-_JM?quantity=1)
-- [Led Rojo 5mm Difuso](https://articulo.mercadolibre.com.ar/MLA-780623036-mini-bomba-de-agua-sumergible-3v-5v-dc-armodlpump-_JM?quantity=1)
-- [Led Verde 5mm Difuso](https://articulo.mercadolibre.com.ar/MLA-614324355-led-verde-5mm-difuso-arduino-ptec-_JM?quantity=1#reco_item_pos=2&reco_backend=machinalis-seller-items&reco_backend_type=low_level&reco_client=vip-seller_items-above&reco_id=a13b6ea5-2699-4dc3-958a-49374192ed86)
+- [Led Rojo 5mm Difuso](https://articulo.mercadolibre.com.ar/MLA-614324318-led-rojo-5mm-difuso-arduino-ptec-_JM?quantity=1)
+- [Led Verde 5mm Difuso](https://articulo.mercadolibre.com.ar/MLA-614324355-led-verde-5mm-difuso-arduino-ptec-_JM)
