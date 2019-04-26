@@ -1,12 +1,20 @@
 #include "SoftwareSerial.h"
 #include "HX711.h"
+#include "EEPROM.h"
 
-/////// constantes
+/////// constantes que se repiten en java al igual que los leds
 #define SIN_ACCION           0;
 #define SACAR_CONTENIDO      1;
 #define MOVER_BRAZO          2;
 #define BAJAR_SINFIN         3;
 #define RETORNAR_A_REPOSO    4;
+#define SETEAR_NOMBRE        5;
+#define ENVIAR_NOMBRE        6;
+#define VALIDAR_HUMEDAD      7;
+
+/////// PIN DEBUG
+#define debugIn             54;
+#define debugOut            55;
 
 /////// Sensores
 #define humedad             68;
@@ -36,6 +44,8 @@ int zumbadorTime = 0;
 
 float calibration_factor = 2230;
 
+char[999] nombre;
+
 void setup() {
   bt.begin(9600);
   bt.print("AT + NAMELaJarraDeAda"); // porque es todo de ada?
@@ -64,6 +74,10 @@ void setup() {
   pinMode(alimentacionBT      , OUTPUT);
 
   digitalWrite(ledEncendido, HIGH);
+
+  digitalWrite(debugOut,HIGH);
+
+  nombre = leerProducto();
 }
 
 void loop() {// no usar delay()
@@ -97,17 +111,45 @@ void loop() {// no usar delay()
 
       case MOVER_BRAZO:
         //UNIMPLEMENTED
+        if(digitalRead(debugIn))
+          delay(1000);
         accion = BAJAR_SINFIN;
         break;
 
       case BAJAR_SINFIN:
         //SEMI-IMPLEMENTED
+        if(digitalRead(debugIn))
+          delay(1000);
         enviarHumedad();
-        accion = SACAR_CONTENIDO;
+        accion = VALIDAR_HUMEDAD;
+        break;
+
+      case VALIDAR_HUMEDAD:
+        if (bt.available()){ 
+          if (bt.read())
+            accion = SACAR_CONTENIDO;
+          else
+            accion = RETORNAR_A_REPOSO;
+        } 
         break;
 
       case RETORNAR_A_REPOSO:
         //UNIMPLEMENT
+        if(digitalRead(debugIn))
+          delay(1000);
+        accion = SIN_ACCION;
+        break;
+
+      case SETEAR_NOMBRE:
+        escribirProducto();
+        accion = SIN_ACCION;
+        break;
+
+      case ENVIAR_NOMBRE:
+        bt.write(ENVIAR_NOMBRE);
+        leerProducto();
+        bt.print(nombre);
+        bt.write(0);
         accion = SIN_ACCION;
         break;
     }
@@ -148,8 +190,7 @@ void enviarInfo() {
   bt.print(1)
   bt.print(accion);
 
-  if (accion == SACAR_CONTENIDO)
-  {
+  if (accion == SACAR_CONTENIDO) {
     bt.print(ledSirviendo);
     bt.print((milis() % 500 > 250));
   }
@@ -183,3 +224,21 @@ void alertas() {
 
   digitalWrite(ledCantNoDisponible, pesoBalanza > pesoRequerido);
 }
+
+//////////////////////////// EEPROM
+void escribirProducto() {
+  int index = -1;
+  while (bt.read()) {
+    index++;
+    EEPROM.write(index, nombre[index]);
+  }
+}
+
+char* leerProducto() {
+  int index = 0;
+  do {
+    char c = EEPROM.read(index);
+    nombre[index++] = c;
+  } while (c);
+}
+
