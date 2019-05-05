@@ -1,5 +1,5 @@
 # Asistente de Cocina
-Proyecto de IoT para la materia Sistemas Operativos Avanzádos de la Universidad Nacional de La Matanza
+Proyecto de IoT para la materia Sistemas Operativos Avanzados de la Universidad Nacional de La Matanza
 
 ### Integrantes
 - Tamashiro, Santiago
@@ -9,7 +9,8 @@ Proyecto de IoT para la materia Sistemas Operativos Avanzádos de la Universidad
 - Gronski, Sebastián 
 
 ### Proyecto
-Dispositivo + Aplicacion movil que asisten al momento de cocinar.
+El dispositivo consiste en uno o más recipientes con ingredientes asentados sobre una base, la cual posee un brazo que permite extraer cantidades exactas de los ingredientes en los recipientes y depositarlos en un contenedor. El asistente puede ser controlado mediante una aplicación para celulares Android, la cuál puede cargar recetas para preestablecer las cantidades que deberá extraer el dispositivo.
+Además, puede sensar la humedad y temperatura para determinar si los alimentos están en buen estado para ser consumidos.
 
 ### Sensores Analogicos
 - [Balanza Celda Carga Peso 3kg + Interfaz Hx711](https://articulo.mercadolibre.com.ar/MLA-729338265-balanza-celda-carga-peso-3kg-interfaz-hx711-arduino-ptec-_JM)
