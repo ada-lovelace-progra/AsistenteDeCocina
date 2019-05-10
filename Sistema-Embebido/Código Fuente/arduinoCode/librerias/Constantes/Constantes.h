@@ -23,7 +23,10 @@
 #define temperatura         69
 #define presencia           48
 #define btPairing           49
-#define balanza             50 // no se usa como pin para sensor, se utiliza para enviar al celular
+#define btTx				50
+#define btRx				51
+#define balDt	            52 
+#define balSck	            53 
 
 /////// Actuadores
 #define sinFin              44
