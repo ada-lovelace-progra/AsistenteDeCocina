@@ -4,7 +4,7 @@
 #include <bluetooth.h>
 #include <balanza.h>
 
-Bluetooth bt(btTx,btRx);
+Bluetooth bt(btTx, btRx);
 Balanza bal(balDt, balSck);
 EEPROMAda eeada(bt);
 
@@ -29,11 +29,11 @@ void setup() {
   // Actuadores
   pinMode(sinFin              , OUTPUT);
   pinMode(zumbador            , OUTPUT);
-  
+
   // necesario para desconectar "a la fuerza" el bt
   pinMode(alimentacionBT      , OUTPUT);
 
-  digitalWrite(ledEncendido, HIGH);
+  Encendido = HIGH;
 
   digitalWrite(debugOut, HIGH);
 
@@ -43,7 +43,7 @@ void setup() {
 void loop() {// no usar delay()
   digitalWrite(alimentacionBT, !digitalRead(btPairing));
   if (bt.isConected()) {
-    digitalWrite(ledConectadoBT, HIGH);
+    ConectadoBT = HIGH;
     switch (accion) {
       case SIN_ACCION:
         accion = bt.leer();
@@ -106,10 +106,10 @@ void loop() {// no usar delay()
         break;
     }
     alertas();
-    bt.enviarInfo(accion,pesoBalanza, pesoRequerido);
+    bt.enviarInfo(accion, pesoBalanza, pesoRequerido);
   }
   else
-    digitalWrite(ledConectadoBT, (millis() % 450 > 200));
+    ConectadoBT = (millis() % 450 > 200);
 }
 
 void leerPesoADepositar() {
@@ -124,17 +124,17 @@ int porcentaje(int percent) {
 //////////////////////////// ALERTAS
 void alertas() {
   if (accion == SACAR_CONTENIDO)
-    digitalWrite(ledSirviendo, (millis() % 500 > 250));
+    Sirviendo = (millis() % 500 > 250);
 
   if (bt.isConected())
-    digitalWrite(ledConectadoBT, (millis() % 450 > 200));
+    ConectadoBT = (millis() % 450 > 200);
   else
-    digitalWrite(ledConectadoBT, HIGH);
+    ConectadoBT = HIGH;
 
-  digitalWrite(ledDisponible, accion == SIN_ACCION);
+  Disponible = accion == SIN_ACCION;
 
   if (zumbadorTime - millis() < tiempoZumbador)
     digitalWrite(zumbador, millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7); // deberia hacer un pipipipi....
 
-  digitalWrite(ledCantNoDisponible, bal.isPesoAlcanzado());
+  CantNoDisponible = bal.isPesoAlcanzado();
 }
