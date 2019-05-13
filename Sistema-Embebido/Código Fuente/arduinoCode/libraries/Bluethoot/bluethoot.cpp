@@ -1,7 +1,12 @@
 #include "bluethoot.h"
 #include "librerias\constantes.h"
+#include "Bluethoot.h"
+
+using namespace std;
+
 
 Bluethoot::Bluethoot(int tx, int rx) {
+  bt=SoftwareSerial(tx,rx);
   bt.begin(9600);
   bt.print("AT");
   delay(1000);
@@ -40,9 +45,8 @@ int Bluethoot::leer() {
   }
 }
 
-char* Bluethoot::leerString(){
+char* Bluethoot::leerString(char* c){
   int i=-1;
-  char c[999];
   char t=bt.read();
 
   while(t){
@@ -87,6 +91,7 @@ double Balanza::leer_4bytes(){
 void Bluethoot::enviar(char* c){
   bt.print(c);
 }
+
 void Bluethoot::enviar(int c){
   bt.print(c);
-}
+} 

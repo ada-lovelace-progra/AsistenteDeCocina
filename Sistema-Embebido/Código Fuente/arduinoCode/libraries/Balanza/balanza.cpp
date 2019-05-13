@@ -1,5 +1,7 @@
 #include "balanza.h"
 
+using namespace std;
+
 Balanza::Balanza(int data, int sck){
 	b.begin(data,sck);
 	b.set_scale();

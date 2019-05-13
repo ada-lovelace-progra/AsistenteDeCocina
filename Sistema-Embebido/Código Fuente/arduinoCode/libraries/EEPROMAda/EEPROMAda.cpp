@@ -1,7 +1,10 @@
 #include "../Bluethoot/Bluethoot.h"
 #include <EEPROM.h> 
+#include "EEPROMAda"
 
-void EEPROMAda::escribirProducto(char * nombre, Bluethoot bt) {
+using namespace std;
+
+static void EEPROMAda::escribirProducto(char * nombre, Bluethoot bt) {
   int index = -1;
   while (bt.leer()) {
     index++;
@@ -9,7 +12,7 @@ void EEPROMAda::escribirProducto(char * nombre, Bluethoot bt) {
   }
 }
 
-char* EEPROMAda::leerProducto(Bluethoot bt) {
+static char* EEPROMAda::leerProducto(Bluethoot bt) {
   char nombre[999];
   int index = 0;
 

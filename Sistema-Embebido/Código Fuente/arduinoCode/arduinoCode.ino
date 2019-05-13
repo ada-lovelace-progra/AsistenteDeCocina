@@ -1,9 +1,9 @@
-#include "librerias/Constantes/Constantes.h"
-#include "librerias/bluethoot/bluethoot.h"
-#include "librerias/balanza/balanza.h"
-#include "librerias/EEPROMAda/EEPROMAda.h"
+#include "libraries/Constantes/Constantes.h"
+#include "libraries/bluethoot/bluethoot.h"
+#include "libraries/balanza/balanza.h"
+#include "libraries/EEPROMAda/EEPROMAda.h"
+#include "libraries/Led/Led.h"
 
-EEPROMAda eeprom;
 Bluethoot bt(btTx, btRx);
 Balanza bal(balDt, balSck);
 
@@ -16,18 +16,19 @@ int pesoADepositar;
 int zumbadorTime;
 int humedadLevel;
 
+Led Encendido        (ledEncendido);
+Led ConectadoBT      (ledConectadoBT);
+Led Sirviendo        (ledSirviendo);
+Led Disponible       (ledDisponible);
+Led CantNoDisponible (ledCantNoDisponible);
+
 void setup() {
   pinMode(btPairing           , INPUT);
 
   // Actuadores
   pinMode(sinFin              , OUTPUT);
   pinMode(zumbador            , OUTPUT);
-  pinMode(ledEncendido        , OUTPUT);
-  pinMode(ledConectadoBT      , OUTPUT);
-  pinMode(ledSirviendo        , OUTPUT);
-  pinMode(ledDisponible       , OUTPUT);
-  pinMode(ledCantNoDisponible , OUTPUT);
-
+  
   // necesario para desconectar "a la fuerza" el bt
   pinMode(alimentacionBT      , OUTPUT);
 
@@ -35,7 +36,7 @@ void setup() {
 
   digitalWrite(debugOut, HIGH);
 
-  producto = eeprom.leerProducto();
+  producto = EEPROMAda::leerProducto();
 }
 
 void loop() {// no usar delay()
@@ -49,7 +50,7 @@ void loop() {// no usar delay()
 
       case SACAR_CONTENIDO:
         if (digitalRead(presencia) == HIGH) {
-          
+
           if (!bal.isPesoAlcanzado())
             analogWrite(sinFin, porcentaje(50)); //0-255
           else {
@@ -90,14 +91,14 @@ void loop() {// no usar delay()
         break;
 
       case SETEAR_NOMBRE:
-        producto = bt.leerString();
-        eeprom.escribirProducto(producto);
+        bt.leerString(producto);
+        EEPROMAda::escribirProducto(producto);
         accion = SIN_ACCION;
         break;
 
       case ENVIAR_NOMBRE:
         bt.enviar(ENVIAR_NOMBRE);
-        producto = eeprom.leerProducto();
+        producto = EEPROMAda::leerProducto();
         bt.enviar(producto);
         bt.enviar(0);
         accion = SIN_ACCION;

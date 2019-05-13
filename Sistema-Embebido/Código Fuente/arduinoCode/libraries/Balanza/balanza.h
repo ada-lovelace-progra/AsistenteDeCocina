@@ -1,5 +1,11 @@
 #ifndef Balanza_h
 #define Balanza_h
+#if ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 
 #include "../HX711/HX711.h" 
 
@@ -12,8 +18,6 @@ public:
 private:
   int pin;
   HX711 b;
-
-
 };
  
 #endif

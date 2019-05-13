@@ -1,5 +1,11 @@
 #ifndef Constantes_h
 #define Constantes_h
+#if ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
 
 
 /////// constantes que se repiten en java al igual que los leds
