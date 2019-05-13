@@ -1,11 +1,12 @@
-#include "libraries/Constantes/Constantes.h"
-#include "libraries/bluethoot/bluethoot.h"
-#include "libraries/balanza/balanza.h"
-#include "libraries/EEPROMAda/EEPROMAda.h"
-#include "libraries/Led/Led.h"
+#include <EEPROMAda.h>
+#include <Led.h>
+#include <Constantes.h>
+#include <bluethoot.h>
+#include <balanza.h>
 
-Bluethoot bt(btTx, btRx);
+Bluethoot bt(btTx,btRx);
 Balanza bal(balDt, balSck);
+EEPROMAda eeada(bt);
 
 char* producto;
 long id_dispositivo;
@@ -15,6 +16,7 @@ int pesoRequerido;
 int pesoADepositar;
 int zumbadorTime;
 int humedadLevel;
+int pesoBalanza;
 
 Led Encendido        (ledEncendido);
 Led ConectadoBT      (ledConectadoBT);
@@ -24,7 +26,6 @@ Led CantNoDisponible (ledCantNoDisponible);
 
 void setup() {
   pinMode(btPairing           , INPUT);
-
   // Actuadores
   pinMode(sinFin              , OUTPUT);
   pinMode(zumbador            , OUTPUT);
@@ -36,7 +37,7 @@ void setup() {
 
   digitalWrite(debugOut, HIGH);
 
-  producto = EEPROMAda::leerProducto();
+  producto = eeada.leerProducto();
 }
 
 void loop() {// no usar delay()
@@ -92,20 +93,20 @@ void loop() {// no usar delay()
 
       case SETEAR_NOMBRE:
         bt.leerString(producto);
-        EEPROMAda::escribirProducto(producto);
+        eeada.escribirProducto(producto);
         accion = SIN_ACCION;
         break;
 
       case ENVIAR_NOMBRE:
         bt.enviar(ENVIAR_NOMBRE);
-        producto = EEPROMAda::leerProducto();
+        producto = eeada.leerProducto();
         bt.enviar(producto);
         bt.enviar(0);
         accion = SIN_ACCION;
         break;
     }
     alertas();
-    bt.enviarInfo(accion);
+    bt.enviarInfo(accion,pesoBalanza, pesoRequerido);
   }
   else
     digitalWrite(ledConectadoBT, (millis() % 450 > 200));

@@ -1,5 +1,5 @@
 #include "bluethoot.h"
-#include "librerias\constantes.h"
+#include "libraries\constantes.h"
 #include "Bluethoot.h"
 
 using namespace std;
