@@ -1,12 +1,7 @@
-#include "bluethoot.h"
-#include "libraries\constantes.h"
-#include "Bluethoot.h"
+#include <Bluetooth.h>
+#include <Constantes.h>
 
-using namespace std;
-
-
-Bluethoot::Bluethoot(int tx, int rx) {
-  bt=SoftwareSerial(tx,rx);
+Bluetooth::Bluetooth(int tx, int rx) : bt(SoftwareSerial(tx,rx)){
   bt.begin(9600);
   bt.print("AT");
   delay(1000);
@@ -23,8 +18,8 @@ Bluethoot::Bluethoot(int tx, int rx) {
   conected = false;
 }
 
-int Bluethoot::leer() {
-  if (!bt.isAvailable())
+int Bluetooth::leer() {
+  if (!bt.available())
     return -1;
 
   int r = bt.read();
@@ -45,7 +40,7 @@ int Bluethoot::leer() {
   }
 }
 
-char* Bluethoot::leerString(char* c){
+char* Bluetooth::leerString(char* c){
   int i=-1;
   char t=bt.read();
 
@@ -56,7 +51,7 @@ char* Bluethoot::leerString(char* c){
   return c;
 }
 
-void Bluethoot::enviarInfo(int accion) {
+void Bluetooth::enviarInfo(int accion, int pesoBalanza, int pesoRequerido) {
   bt.print(1);
   bt.print(accion);
 
@@ -72,26 +67,23 @@ void Bluethoot::enviarInfo(int accion) {
   bt.print(pesoBalanza > pesoRequerido);
 }
 
-void Bluethoot::enviarHumedad(double humedadLevel) {
+void Bluetooth::enviarHumedad(double humedadLevel) {
   bt.print(humedad);
   bt.print(analogRead(humedad));
 }
 
-bool Bluethoot::isConected() {
+bool Bluetooth::isConected() {
   return conected;
 }
 
-double Balanza::leer_4bytes(){
-  return  leer() * 256
-          + leer() * 256 * 256
-          + leer() * 256 * 256 * 256
-          + leer() * 256 * 256 * 256 * 256;
+double Bluetooth::leer_4bytes(){
+  return (leer()) + (leer() * 256) + (leer() * 256 * 256) + (leer() * 256 * 256 * 256);
 }
 
-void Bluethoot::enviar(char* c){
+void Bluetooth::enviar(char* c){
   bt.print(c);
 }
 
-void Bluethoot::enviar(int c){
+void Bluetooth::enviar(int c){
   bt.print(c);
 } 

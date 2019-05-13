@@ -1,18 +1,19 @@
-#include "../Bluethoot/Bluethoot.h"
+#include <EEPROMAda.h>
+#include <bluetooth.h>
 #include <EEPROM.h> 
-#include "EEPROMAda"
 
-using namespace std;
+EEPROMAda::EEPROMAda(Bluetooth b):bt(b){
+}
 
-static void EEPROMAda::escribirProducto(char * nombre, Bluethoot bt) {
+void EEPROMAda::escribirProducto(char * nombre) {
   int index = -1;
-  while (bt.leer()) {
+  while (EEPROMAda::bt.leer()) {
     index++;
     EEPROM.write(index, nombre[index]);
   }
 }
 
-static char* EEPROMAda::leerProducto(Bluethoot bt) {
+char* EEPROMAda::leerProducto() {
   char nombre[999];
   int index = 0;
 

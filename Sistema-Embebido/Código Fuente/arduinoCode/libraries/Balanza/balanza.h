@@ -6,18 +6,22 @@
 #include "WProgram.h"
 #endif
 
-
-#include "../HX711/HX711.h" 
+#include <HX711.h> 
 
 class Balanza{
 public:
   Balanza(int data, int sck);
-  double leer();
+  double leerBalanza();
   bool isPesoAlcanzado();
+  void leerPesoADepositar();
 
 private:
   int pin;
   HX711 b;
+
+  int pesoRequerido;
+  int pesoADepositar;
+  int pesoBalanza;
 };
  
 #endif

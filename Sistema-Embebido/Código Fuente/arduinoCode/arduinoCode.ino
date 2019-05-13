@@ -1,10 +1,10 @@
 #include <EEPROMAda.h>
 #include <Led.h>
 #include <Constantes.h>
-#include <bluethoot.h>
+#include <bluetooth.h>
 #include <balanza.h>
 
-Bluethoot bt(btTx,btRx);
+Bluetooth bt(btTx,btRx);
 Balanza bal(balDt, balSck);
 EEPROMAda eeada(bt);
 
