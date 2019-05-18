@@ -8,15 +8,12 @@ Bluetooth bt(btTx, btRx);
 Balanza bal(balDt, balSck);
 EEPROMAda eeada(bt);
 
-char* producto;
-long id_dispositivo;
-int accion = SIN_ACCION;
+char* id_dispositivo;
+int accion = INACTIVO;
 
-int pesoRequerido;
-int pesoADepositar;
-int zumbadorTime;
-int humedadLevel;
-int pesoBalanza;
+int idProducto[MAX_ARRAY_SIZE];
+int cantidad[MAX_ARRAY_SIZE];
+int cantDatos = 0;
 
 Led Encendido        (ledEncendido);
 Led ConectadoBT      (ledConectadoBT);
@@ -37,85 +34,96 @@ void setup() {
 
   digitalWrite(debugOut, HIGH);
 
-  producto = eeada.leerProducto();
 }
 
-void loop() {// no usar delay()
+void loop() {
   digitalWrite(alimentacionBT, !digitalRead(btPairing));
   if (bt.isConected()) {
     ConectadoBT = HIGH;
     switch (accion) {
-      case SIN_ACCION:
+      case INACTIVO:
         accion = bt.leer();
         break;
-
-      case SACAR_CONTENIDO:
-        if (digitalRead(presencia) == HIGH) {
-
-          if (!bal.isPesoAlcanzado())
-            analogWrite(sinFin, porcentaje(50)); //0-255
+      case LEER_UNICO_PROD:
+        cantDatos = 1;
+        idProducto[0] = bt.leerID();
+        cantidad[0] = bt.leerCantidad();
+        accion = ESPERAR_NO_PRODUCTO;
+        break;
+      case LEER_MULTI_PROD:
+        int temp = cantDatos = bt.leerCantDatos();
+        cantDatos--;
+        while (--temp) {
+          idProducto[temp] = bt.leerID();
+          cantidad[temp] = bt.leerCantidad();
+        }
+        accion = ESPERAR_NO_PRODUCTO;
+        break;
+      case ESPERAR_PRODUCTO:
+        if (digitalRead(presencia)) {
+          //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
+          accion = SENSAR_PESO;
+        }
+        break;
+      case SENSAR_PESO:
+        if (cantidad[cantDatos] < bal.leerPesoBalanza()) {
+          accion = BAJAR_BRAZO;
+        }
+        else {
+          accion = CANT_NO_DISP;
+        }
+        break;
+      case BAJAR_BRAZO:
+        //quedan pendientes por falta de tiempo y financiamiento
+        delay(60);
+        break;
+      case SENSAR_PESO_SINFIN:
+        bal.setPesoADepositar(cantidad[cantDatos]);
+        accion = EXTRAER_PRODUCTO;
+        break;
+      case EXTRAER_PRODUCTO:
+        analogWrite(sinFin, porcentaje(50));
+        if (bal.isPesoAlcanzado()) {
+          digitalWrite(sinFin, LOW);
+          accion = SUBIR_BRAZO;
+        }
+        break;
+      case SUBIR_BRAZO:
+        //quedan pendientes por falta de tiempo y financiamiento
+        delay(60);
+        break;
+      case ESPERAR_NO_PRODUCTO:
+        if (!digitalRead(presencia)) {
+          if (--cantDatos) {
+            accion = ESPERAR_PRODUCTO;
+          }
           else {
-            analogWrite(sinFin, 0); //0-255
-            pesoRequerido = 0;
-            pesoADepositar = 0;
-            zumbadorTime = millis();
-            accion = RETORNAR_A_REPOSO;
+            accion = INACTIVO;
           }
         }
-        else analogWrite(sinFin, 0); //0-255
         break;
-
-      case MOVER_BRAZO:
-        //UNIMPLEMENTED
-        if (digitalRead(debugIn))
-          delay(1000);
-        accion = BAJAR_SINFIN;
+      case CANT_NO_DISP:
+        CantNoDisponible = HIGH;
+        bt.enviar(idProducto[cantDatos]);
+        accion = INACTIVO;
         break;
-
-      case BAJAR_SINFIN:
-        //SEMI-IMPLEMENTED
-        if (digitalRead(debugIn))
-          delay(1000);
-        bt.enviarHumedad(humedadLevel);
-        accion = VALIDAR_HUMEDAD;
-        break;
-
-      case VALIDAR_HUMEDAD:
-        accion = bt.leer();
-        break;
-
-      case RETORNAR_A_REPOSO:
-        //UNIMPLEMENT
-        if (digitalRead(debugIn))
-          delay(1000);
-        accion = SIN_ACCION;
-        break;
-
       case SETEAR_NOMBRE:
-        bt.leerString(producto);
-        eeada.escribirProducto(producto);
-        accion = SIN_ACCION;
         break;
-
       case ENVIAR_NOMBRE:
-        bt.enviar(ENVIAR_NOMBRE);
-        producto = eeada.leerProducto();
-        bt.enviar(producto);
-        bt.enviar(0);
-        accion = SIN_ACCION;
+        break;
+      case VALIDAR_HUMEDAD:
+        break;
+      case BT_CONECTADO:
+        break;
+      case BT_DESCONECTADO:
         break;
     }
     alertas();
-    bt.enviarInfo(accion, pesoBalanza, pesoRequerido);
+    bt.enviarInfo(accion, bal.pesoBalanza, bal.pesoRequerido);
   }
   else
     ConectadoBT = (millis() % 450 > 200);
 }
-
-void leerPesoADepositar() {
-  pesoADepositar = bt.leer_4bytes();
-}
-
 
 int porcentaje(int percent) {
   return (255 * percent) / 100;
@@ -123,7 +131,7 @@ int porcentaje(int percent) {
 
 //////////////////////////// ALERTAS
 void alertas() {
-  if (accion == SACAR_CONTENIDO)
+  if (accion == EXTRAER_PRODUCTO)
     Sirviendo = (millis() % 500 > 250);
 
   if (bt.isConected())
@@ -131,10 +139,15 @@ void alertas() {
   else
     ConectadoBT = HIGH;
 
-  Disponible = accion == SIN_ACCION;
+  Disponible = accion == INACTIVO;
 
-  if (zumbadorTime - millis() < tiempoZumbador)
-    digitalWrite(zumbador, millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7); // deberia hacer un pipipipi....
-
-  CantNoDisponible = bal.isPesoAlcanzado();
+  if (zumbadorTime - millis() < tiempoZumbador) {
+    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
+      tone(zumbador, FRECUENCIA); // deberia hacer un pipipipi....
+    else
+      noTone(zumbador);
+  }
+  else {
+    noTone(zumbador);
+  }
 }

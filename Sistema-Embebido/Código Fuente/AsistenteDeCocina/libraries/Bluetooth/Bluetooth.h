@@ -15,11 +15,13 @@ public:
   int leer();
   char* leerString(char* c);
   bool isConected();
-  double leer_4bytes();
+  int leerNbytes(int c);
   void enviar(char* c);
   void enviar(int c);
   void enviarInfo(int accion, int pesoBalanza, int pesoRequerido);
-  void enviarHumedad(double humedadLevel);
+  int leerCantidad();
+  int leerCantDatos();
+  int leerID();
 
 private:
   SoftwareSerial bt;

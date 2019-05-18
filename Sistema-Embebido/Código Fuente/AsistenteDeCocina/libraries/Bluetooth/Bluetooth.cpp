@@ -55,29 +55,27 @@ void Bluetooth::enviarInfo(int accion, int pesoBalanza, int pesoRequerido) {
   bt.print(1);
   bt.print(accion);
 
-  if (accion == SACAR_CONTENIDO) {
+  if (accion == EXTRAER_PRODUCTO) {
     bt.print(ledSirviendo);
     bt.print((millis() % 500 > 250));
   }
 
   bt.print(ledDisponible);
-  bt.print(accion == SIN_ACCION);
+  bt.print(accion == INACTIVO);
 
   bt.print(ledCantNoDisponible);
   bt.print(pesoBalanza > pesoRequerido);
-}
-
-void Bluetooth::enviarHumedad(double humedadLevel) {
-  bt.print(humedad);
-  bt.print(analogRead(humedad));
 }
 
 bool Bluetooth::isConected() {
   return conected;
 }
 
-double Bluetooth::leer_4bytes(){
-  return (leer()) + (leer() * 256) + (leer() * 256 * 256) + (leer() * 256 * 256 * 256);
+int Bluetooth::leerNbytes(int c){
+  c--;
+  if(c)
+    return leer();
+  return leer() * pow(256,c) + leerNbytes(c); 
 }
 
 void Bluetooth::enviar(char* c){
@@ -87,3 +85,15 @@ void Bluetooth::enviar(char* c){
 void Bluetooth::enviar(int c){
   bt.print(c);
 } 
+
+int Bluetooth::leerID(){
+  return leerNbytes(4);
+}
+
+int Bluetooth::leerCantidad(){
+  return leerNbytes(4);
+}
+
+int Bluetooth::leerCantDatos(){
+  return leerNbytes(4);
+}

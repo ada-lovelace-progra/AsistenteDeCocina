@@ -7,7 +7,7 @@ EEPROMAda::EEPROMAda(Bluetooth b):bt(b){
 
 void EEPROMAda::escribirProducto(char * nombre) {
   int index = -1;
-  while (EEPROMAda::bt.leer()) {
+  while (bt.leer()) {
     index++;
     EEPROM.write(index, nombre[index]);
   }

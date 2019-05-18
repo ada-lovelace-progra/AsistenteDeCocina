@@ -7,21 +7,23 @@
 #endif
 
 #include <HX711.h> 
+#include <constantes.h>
 
 class Balanza{
 public:
   Balanza(int data, int sck);
-  double leerBalanza();
+  int leerBalanza();
+  int leerPesoBalanza();
+  int setPesoADepositar(int c);
   bool isPesoAlcanzado();
   void leerPesoADepositar();
+  int pesoRequerido;
+  int pesoADepositar;
+  int pesoBalanza;
 
 private:
   int pin;
   HX711 b;
-
-  int pesoRequerido;
-  int pesoADepositar;
-  int pesoBalanza;
 };
  
 #endif
