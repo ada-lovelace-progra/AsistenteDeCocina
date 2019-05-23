@@ -3,10 +3,12 @@
 #include <Constantes.h>
 #include <bluetooth.h>
 #include <balanza.h>
+#include <HumedadTemperatura.h>
 
 Bluetooth bt(btTx, btRx);
 Balanza bal(balDt, balSck);
 EEPROMAda eeada(bt);
+HumedadTemperatura ht(tem_hum);
 
 char* id_dispositivo;
 int accion = INACTIVO;
@@ -104,12 +106,21 @@ void loop() {
         break;
       case CANT_NO_DISP:
         CantNoDisponible = HIGH;
-        bt.enviar(idProducto[cantDatos]);
+        int idprod=idProducto[cantDatos];
+        bt.enviar(CANT_NO_DISP, idprod);
+        delay(500);
+        CantNoDisponible = LOW;
         accion = INACTIVO;
         break;
-      case SETEAR_NOMBRE:
+      case SETEAR_IDDISP:
+        bt.leerString(id_dispositivo);
+        eeada.escribirID_DIS(id_dispositivo);
+        accion = INACTIVO;
         break;
-      case ENVIAR_NOMBRE:
+      case ENVIAR_IDDISP:
+        id_dispositivo = eeada.leerID_DISP();
+        bt.enviar(id_dispositivo);
+        accion = INACTIVO;
         break;
       case VALIDAR_HUMEDAD:
         break;
@@ -131,18 +142,18 @@ int porcentaje(int percent) {
 
 //////////////////////////// ALERTAS
 void alertas() {
-  if (accion == EXTRAER_PRODUCTO)
-    Sirviendo = (millis() % 500 > 250);
 
-  if (bt.isConected())
+  Sirviendo = accion == EXTRAER_PRODUCTO;
+
+  if (!bt.isConected())
     ConectadoBT = (millis() % 450 > 200);
   else
     ConectadoBT = HIGH;
 
-  Disponible = accion == INACTIVO;
+  Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / 250) % 2);
 
   if (zumbadorTime - millis() < tiempoZumbador) {
-    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
+  if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
       tone(zumbador, FRECUENCIA); // deberia hacer un pipipipi....
     else
       noTone(zumbador);
@@ -150,4 +161,10 @@ void alertas() {
   else {
     noTone(zumbador);
   }
+
+  Serial.print("humedad: ");
+  Serial.print(ht.leerHumedad());
+  Serial.print("temperatura: ");
+  Serial.print(ht.leerHumedad());
+  Serial.println();
 }
