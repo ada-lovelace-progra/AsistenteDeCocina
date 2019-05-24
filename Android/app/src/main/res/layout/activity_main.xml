@@ -17,7 +17,7 @@
         app:layout_constraintVertical_bias="0.082" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/bt_ingrediente"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ingredientes"
@@ -43,7 +43,7 @@
         app:layout_constraintGuide_begin="20dp" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/bt_recetas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Recetas"
@@ -51,11 +51,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/bt_ingrediente"
         app:layout_constraintVertical_bias="0.088" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/bt_bluetooth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bluetooth"
@@ -63,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2"
+        app:layout_constraintTop_toBottomOf="@+id/bt_recetas"
         app:layout_constraintVertical_bias="0.116" />
 
 </android.support.constraint.ConstraintLayout>
