@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">AppsistenteDeCocina</string>
+    <string name="hintTxtItem">Ingrese nombre</string>
+    <string name="lblBtnAdd">Agregar</string>
+    <string name="txtEmpty">No tenes ingredientes</string>
 </resources>
