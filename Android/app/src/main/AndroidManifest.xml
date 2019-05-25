@@ -10,9 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".Dialogo_Ingrediente"
+            android:theme="@android:style/Theme.Holo.Light.Dialog"
+            />
+        <activity
             android:name=".List_Ingrediente"
             android:label="@string/title_activity_list__ingrediente"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Bluetooth" />
         <activity android:name=".Recetas" />
         <activity android:name=".Lista_ingredientes" />
