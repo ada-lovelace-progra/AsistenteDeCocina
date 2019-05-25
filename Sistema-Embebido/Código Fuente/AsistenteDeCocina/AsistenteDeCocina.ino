@@ -5,10 +5,10 @@
 #include <balanza.h>
 #include <HumedadTemperatura.h>
 
-Bluetooth bt(btTx, btRx);
-Balanza bal(balDt, balSck);
-EEPROMAda eeada(bt);
-HumedadTemperatura ht(tem_hum);
+Bluetooth bt;
+Balanza bal;
+EEPROMAda eeada;
+HumedadTemperatura ht;
 
 char* id_dispositivo;
 int accion = INACTIVO;
@@ -17,13 +17,16 @@ int idProducto[MAX_ARRAY_SIZE];
 int cantidad[MAX_ARRAY_SIZE];
 int cantDatos = 0;
 
-Led Encendido        (ledEncendido);
-Led ConectadoBT      (ledConectadoBT);
-Led Sirviendo        (ledSirviendo);
-Led Disponible       (ledDisponible);
-Led CantNoDisponible (ledCantNoDisponible);
+Led Encendido        ;
+Led ConectadoBT      ;
+Led Sirviendo        ;
+Led Disponible       ;
+Led CantNoDisponible ;
 
 void setup() {
+  Serial.begin(9600);
+  Serial.print("arranca");
+
   pinMode(btPairing           , INPUT);
   // Actuadores
   pinMode(sinFin              , OUTPUT);
@@ -32,19 +35,38 @@ void setup() {
   // necesario para desconectar "a la fuerza" el bt
   pinMode(alimentacionBT      , OUTPUT);
 
+  Encendido        = Led(ledEncendido);
+  ConectadoBT      = Led(ledConectadoBT);
+  Sirviendo        = Led(ledSirviendo);
+  Disponible       = Led(ledDisponible);
+  CantNoDisponible = Led(ledCantNoDisponible);
+  tone(zumbador, 1000);
+  delay(250);
+  noTone(zumbador);
+
   Encendido = HIGH;
 
   digitalWrite(debugOut, HIGH);
-
+  bt = Bluetooth(btTx, btRx);
+  bal = Balanza(balDt, balSck);
+  eeada = EEPROMAda(bt);
+  ht = HumedadTemperatura(tem_hum);
 }
 
 void loop() {
+  double b = bal.leerBalanza();
+  //if (b > 0) {
+    Serial.print("Bal: ");
+    Serial.println(b);
+  //}
   digitalWrite(alimentacionBT, !digitalRead(btPairing));
   if (bt.isConected()) {
     ConectadoBT = HIGH;
     switch (accion) {
       case INACTIVO:
         accion = bt.leer();
+        Serial.print("Accion: ");
+        Serial.println(accion);
         break;
       case LEER_UNICO_PROD:
         cantDatos = 1;
@@ -106,7 +128,7 @@ void loop() {
         break;
       case CANT_NO_DISP:
         CantNoDisponible = HIGH;
-        int idprod=idProducto[cantDatos];
+        int idprod = idProducto[cantDatos];
         bt.enviar(CANT_NO_DISP, idprod);
         delay(500);
         CantNoDisponible = LOW;
@@ -123,6 +145,10 @@ void loop() {
         accion = INACTIVO;
         break;
       case VALIDAR_HUMEDAD:
+        bt.enviar("humedad: ");
+        bt.enviar(ht.leerHumedad());
+        bt.enviar("temperatura: ");
+        bt.enviar(ht.leerHumedad());
         break;
       case BT_CONECTADO:
         break;
@@ -153,7 +179,7 @@ void alertas() {
   Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / 250) % 2);
 
   if (zumbadorTime - millis() < tiempoZumbador) {
-  if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
+    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
       tone(zumbador, FRECUENCIA); // deberia hacer un pipipipi....
     else
       noTone(zumbador);

@@ -11,6 +11,7 @@
 
 class HumedadTemperatura{
 public:
+	HumedadTemperatura();
   HumedadTemperatura(int pin);
   int leerHumedad();
   int leerTemperatura();
