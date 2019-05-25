@@ -9,9 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Bluetooth"></activity>
+        <activity
+            android:name=".List_Ingrediente"
+            android:label="@string/title_activity_list__ingrediente"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Bluetooth" />
         <activity android:name=".Recetas" />
-        <activity android:name=".Ingredientes" />
+        <activity android:name=".Lista_ingredientes" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

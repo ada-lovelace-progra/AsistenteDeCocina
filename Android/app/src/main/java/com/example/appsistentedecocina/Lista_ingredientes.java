@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 
-public class Ingredientes extends ListActivity{
+public class Lista_ingredientes extends ListActivity{
 
     /** Items entered by the user is stored in this ArrayList variable */
     ArrayList<String> list = new ArrayList<String>();
@@ -25,13 +25,10 @@ public class Ingredientes extends ListActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredientes);
 
-        /** Reference to the button of the layout main.xml */
         Button btn = (Button) findViewById(R.id.btnAdd);
 
-        /** Defining the ArrayAdapter to set items to ListView */
         adapter = new ArrayAdapter<String>(this, R.layout.list_item_ingredient, list);
 
-        /** Defining a click event listener for the button "Add" */
         OnClickListener listener = new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,10 +46,9 @@ public class Ingredientes extends ListActivity{
             }
         };
 
-        /** Setting the event listener for the add button */
         btn.setOnClickListener(listener);
 
-        /** Setting the adapter to the ListView */
         setListAdapter(adapter);
     }
+
 }
