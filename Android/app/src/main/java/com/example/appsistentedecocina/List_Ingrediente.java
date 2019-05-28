@@ -7,9 +7,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.example.appsistentedecocina.data.Producto;
 
 import java.util.ArrayList;
 
@@ -42,10 +43,10 @@ public class List_Ingrediente extends AppCompatActivity {
         });
 
         listview = (ListView)findViewById(R.id.ingrediente_list);
-        ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
+        ArrayList<Producto> listaIngredientes = new ArrayList<Producto>();
 
-        listaIngredientes.add(new Ingrediente("arroz",150));
-        listaIngredientes.add(new Ingrediente("yerba",500));
+        listaIngredientes.add(new Producto("arroz",150));
+        listaIngredientes.add(new Producto("yerba",500));
 
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
