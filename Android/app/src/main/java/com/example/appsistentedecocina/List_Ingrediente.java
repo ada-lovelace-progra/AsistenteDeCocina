@@ -1,5 +1,6 @@
 package com.example.appsistentedecocina;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,8 +31,12 @@ public class List_Ingrediente extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "No esta implementado, bancame", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "No esta implementado, bancame", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent intent;
+                intent=new Intent(List_Ingrediente.this, Dialogo_Ingrediente.class);
+                //aca tiene que ir al dialogo pero no lo se metera
+                startActivity(intent);
 
             }
         });
