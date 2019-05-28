@@ -1,6 +1,7 @@
 package com.example.appsistentedecocina;
 
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,17 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.appsistentedecocina.data.Producto;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdaptadorIngrediente extends ArrayAdapter {
 
     private Context mContext;
-    private List<Producto> ingList = new ArrayList<>();
+    private List<Ingrediente> ingList = new ArrayList<>();
 
-    public AdaptadorIngrediente(@NonNull Context context, ArrayList<Producto> list) {
+    public AdaptadorIngrediente(@NonNull Context context, ArrayList<Ingrediente> list) {
         super(context, 0, list);
         mContext = context;
         ingList = list;
@@ -33,13 +32,13 @@ public class AdaptadorIngrediente extends ArrayAdapter {
         if(listItem == null)
             listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item_ingredient,parent,false);
 
-        Producto ingActual = ingList.get(position);
+        Ingrediente ingActual = ingList.get(position);
 
         TextView name = (TextView) listItem.findViewById(R.id.textView_name);
-        name.setText(ingActual.getNombre());
+        name.setText(ingActual.getTitulo());
 
         TextView cantidad = (TextView) listItem.findViewById(R.id.textView_cant);
-        cantidad.setText(String.valueOf( ingActual.getCantidad()) );
+        cantidad.setText(String.valueOf( ingActual.getCant()) );
 
         return listItem;
     }
