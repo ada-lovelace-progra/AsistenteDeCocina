@@ -33,7 +33,7 @@ public class AdaptadorIngrediente extends ArrayAdapter {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View listItem = convertView;
         if (listItem == null)
             listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item_ingredient, parent, false);
@@ -72,6 +72,8 @@ public class AdaptadorIngrediente extends ArrayAdapter {
                         if (!input2.getText().toString().equals("")) {
                             ingActual.setCant(Integer.parseInt(input2.getText().toString()));
                             //Toast.makeText(mContext, "no se como modificarlo a " + input2.getText().toString() + " gr", Toast.LENGTH_SHORT).show();
+                        }else {
+                            ingList.remove(position);
                         }
                     }
                 });

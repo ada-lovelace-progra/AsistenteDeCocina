@@ -22,6 +22,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static android.app.PendingIntent.getActivity;
@@ -30,7 +36,6 @@ public class List_Ingrediente extends AppCompatActivity {
 
     private ListView listview;
     private AdaptadorIngrediente adapter;
-    private Intent intent;
     private ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
     private String nuevo_ingrediente = "";
     private int nueva_cantidad = 0;
@@ -50,7 +55,6 @@ public class List_Ingrediente extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "No esta implementado, bancame", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Nuevo Ingrediente");
                 //contexto
@@ -98,8 +102,14 @@ public class List_Ingrediente extends AppCompatActivity {
 
         listview = (ListView) findViewById(R.id.ingrediente_list);
 
-        listaIngredientes.add(new Ingrediente("arroz", 150));
-        listaIngredientes.add(new Ingrediente("yerba", 500));
+        if(! list_exists(this))
+        {
+            create_list();
+        }
+        open_list();
+
+//        listaIngredientes.add(new Ingrediente("arroz", 150));
+//        listaIngredientes.add(new Ingrediente("yerba", 500));
 
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
@@ -124,5 +134,97 @@ public class List_Ingrediente extends AppCompatActivity {
         super.onResume();
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
+    }
+
+
+    private void create_list(){
+        File file = new File(this.getFilesDir(), "ingredientes");
+        file.setWritable(true);
+        file.setReadable(true);
+        FileOutputStream   fos  = null;
+        ObjectOutputStream oos  = null;
+        //listaIngredientes.add(new Ingrediente("arroz", 150));
+        //listaIngredientes.add(new Ingrediente("yerba", 500));
+
+
+        try {
+            fos = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(this.listaIngredientes);
+            oos.close();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void save_list(){
+        File directory = this.getFilesDir();
+        File file = new File(directory, "ingredientes");
+        FileOutputStream   fos  = null;
+        ObjectOutputStream oos  = null;
+        //boolean            keep = true;
+
+
+        try {
+            fos = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(this.listaIngredientes);
+        }
+        catch (Exception e) {
+            //keep = false;
+            //Log.e("MyAppName", "failed to suspend", e);
+        }
+        finally {
+            try {
+                if (oos != null)   oos.close();
+                if (fos != null)   fos.close();
+                //if (keep == false) file.delete();
+            }
+            catch (Exception e) { /* do nothing */ }
+        }
+
+    }
+
+    private void open_list(){
+        File directory = this.getFilesDir();
+        File file = new File(directory, "ingredientes");
+        FileInputStream fis  = null;
+        ObjectInput ois  = null;
+        //boolean            keep = true;
+
+
+        try {
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+            this.listaIngredientes = (ArrayList<Ingrediente>) ois.readObject();
+        }
+        catch (Exception e) {
+            //keep = false;
+            //Log.e("MyAppName", "failed to suspend", e);
+        }
+        finally {
+            try {
+                if (ois != null)   ois.close();
+                if (fis != null)   fis.close();
+                //if (keep == false) file.delete();
+            }
+            catch (Exception e) { /* do nothing */ }
+        }
+    }
+
+    public boolean list_exists(Context context) {
+        File file = context.getFileStreamPath("ingredientes");
+        if(file == null || !file.exists()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        save_list();
+        super.onDestroy();
     }
 }

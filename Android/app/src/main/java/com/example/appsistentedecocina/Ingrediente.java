@@ -1,6 +1,8 @@
 package com.example.appsistentedecocina;
 
-public class Ingrediente {
+import java.io.Serializable;
+
+public class Ingrediente implements Serializable {
 
     public Ingrediente(String titulo, int cant) {
         this.titulo = titulo;
