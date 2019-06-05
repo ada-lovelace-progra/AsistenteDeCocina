@@ -77,7 +77,7 @@ public class List_Ingrediente extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (! nuevo_ingrediente.equals("")){
+                        if (! input.getText().toString().equals("") ){
                             nuevo_ingrediente = input.getText().toString();
                             nueva_cantidad = Integer.parseInt(input2.getText().toString());
                             add_ingrediente();
