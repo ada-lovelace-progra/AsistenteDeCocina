@@ -1,17 +1,17 @@
 #include <balanza.h>
 
-using namespace std;
+Balanza::Balanza(){}
 
 Balanza::Balanza(int data, int sck){
+  Serial.println("Construyendo Balanza");
 	b.begin(data,sck);
 	b.set_scale(fcorreccion);
 	b.tare(20);	
 }
 
-int Balanza::leerBalanza(){
-	int p = b.is_ready() ? b.get_value() : 0;
-
-	return p > 0 ? p : 0;
+double Balanza::leerBalanza(){
+//	double p = b.is_ready() ? (b.get_value(5)*1000)+1000 : -1;
+	return b.get_value();//p > 0 ? p : 0;
 }
 
 bool Balanza::isPesoAlcanzado(){
@@ -22,11 +22,11 @@ bool Balanza::isPesoAlcanzado(){
 	return pesoRequerido < pesoBalanza;
 }
 
-int Balanza::setPesoADepositar(int p){
+double Balanza::setPesoADepositar(double p){
 	return pesoADepositar = leerBalanza() - p;
 }
 
-int Balanza::leerPesoBalanza(){
+double Balanza::leerPesoBalanza(){
 	return pesoBalanza = leerBalanza();
 }
 /*

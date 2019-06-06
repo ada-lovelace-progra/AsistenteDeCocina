@@ -10,12 +10,13 @@
 
 class EEPROMAda{
 public:
-	EEPROMAda(Bluetooth b);
-	void escribirProducto(char * nombre);
-	char* leerProducto();
+	EEPROMAda();
+	EEPROMAda(int a);
+	void escribirID_DIS(char * nombre);
+	char* leerID_DISP();
 
 private:
-	Bluetooth bt;
+	char* idDisp=nullptr;
 };
 
 

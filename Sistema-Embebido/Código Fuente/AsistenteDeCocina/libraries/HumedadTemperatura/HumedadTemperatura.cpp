@@ -1,15 +1,27 @@
 #include <HumedadTemperatura.h>
 
-HumedadTemperatura::HumedadTemperatura();
+HumedadTemperatura::HumedadTemperatura() : dht(DHT(tem_hum, DHT11)){}
 
-HumedadTemperatura::HumedadTemperatura(int pin) : s(DHT(pin, DHT11)){
-  s.begin();
+HumedadTemperatura::HumedadTemperatura(int pin) : dht(DHT(pin, DHT11)){
+	Serial.println("Construyendo HumedadTemperatura");
+  	dht.begin();
 }
 
-int HumedadTemperatura::leerHumedad(){
-	return s.readHumidity();
+float HumedadTemperatura::leerHumedad(){
+	this->actualizarDatos();
+	return this->hum;
 }
 
-int HumedadTemperatura::leerTemperatura(){
-	return s.readTemperature();
+float HumedadTemperatura::leerTemperatura(){
+	this->actualizarDatos();
+	return this->temp;
+}
+
+void HumedadTemperatura::actualizarDatos(){
+	if(millis() - this->lastRead < 2000)
+		return;
+
+	lastRead = millis();
+	this->temp = dht.readTemperature();
+	this->hum =  dht.readHumidity();
 }
