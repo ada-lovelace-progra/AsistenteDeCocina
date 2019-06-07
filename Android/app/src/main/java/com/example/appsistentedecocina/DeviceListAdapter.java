@@ -71,6 +71,7 @@ public class DeviceListAdapter extends BaseAdapter{
         holder.addressTv.setText(device.getAddress());
         holder.pairBtn.setText((device.getBondState() ==
                 BluetoothDevice.BOND_BONDED) ? "Desemparejar" : "Emparejar");
+
         holder.pairBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +91,6 @@ public class DeviceListAdapter extends BaseAdapter{
     }
 
     public interface OnPairButtonClickListener {
-        public abstract void onPairButtonClick(int position);
+        void onPairButtonClick(int position);
     }
 }

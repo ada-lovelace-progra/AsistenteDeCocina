@@ -16,6 +16,7 @@ import android.os.Bundle;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -37,8 +38,8 @@ public class Bluetooth extends AppCompatActivity {
     private BluetoothAdapter adaptadorBluetooth;
     private ListView listaDispositivosView;
     private DeviceListAdapter deviceListAdapter;
-    private int posicionListBluethoot;
-
+    private int posDeviceList;
+    private ServicioBluetoothReceiver sbtReceiver;
 
     public static final int REQ_COD = 666;
 
@@ -114,6 +115,10 @@ public class Bluetooth extends AppCompatActivity {
     @Override
     public void onPause()
     {
+        if (sbtReceiver != null) {
+            unregisterReceiver(sbtReceiver);
+        }
+
         if (adaptadorBluetooth != null) {
             if (adaptadorBluetooth.isDiscovering()) {
                 adaptadorBluetooth.cancelDiscovery();
@@ -126,6 +131,17 @@ public class Bluetooth extends AppCompatActivity {
     public void onDestroy() {
         unregisterReceiver(receiver);
         super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        if (sbtReceiver == null) {
+            sbtReceiver = new ServicioBluetoothReceiver();
+        }
+
+        IntentFilter intentFilter = new IntentFilter();
+        registerReceiver(sbtReceiver, intentFilter);
+        super.onResume();
     }
 
     private void switchToggle(boolean isChecked) {
@@ -204,11 +220,11 @@ public class Bluetooth extends AppCompatActivity {
         registerReceiver(receiver, filter);
     }
 
-    //Handler que captura los brodacast que emite el SO al ocurrir los eventos del bluethoot
+    // Handler que captura los brodacast que emite el SO de los eventos Bluetooth
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
+            Log.d("Bluetooth", "recibí: " + action);
             switch (action){
                 case BluetoothAdapter.ACTION_STATE_CHANGED:
                     /* Cambio de estado del Bluetooth (Activado/Desactivado) */
@@ -220,14 +236,12 @@ public class Bluetooth extends AppCompatActivity {
                     } else {
                         switchBluetooth.setEnabled(false);
                     }
-
                     break;
 
                 case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                     /* Inicio de búsqueda de dispositivos Bluetooth */
                     listaDispositivos = new ArrayList<BluetoothDevice>();
                     progressDialog.show();
-
                     break;
 
                 case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
@@ -245,6 +259,7 @@ public class Bluetooth extends AppCompatActivity {
                     break;
 
                 case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
+                    mostrarListaDispositivos();
                     /* Intento emparejar dispositivo */
                     final int bondState =
                             intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,
@@ -256,29 +271,29 @@ public class Bluetooth extends AppCompatActivity {
                     if (bondState == BluetoothDevice.BOND_BONDED &&
                             bondPrevState == BluetoothDevice.BOND_BONDING) {
                         /* Dispositivo emparejado */
-                        mostrarToast("Emparejado");
+                        Log.d("Bluetooth", "iniciando servicio bluetooth.");
                         BluetoothDevice dispositivo =
-                                (BluetoothDevice) deviceListAdapter.getItem(posicionListBluethoot);
+                                (BluetoothDevice) deviceListAdapter.getItem(posDeviceList);
 
-                        /*  ACÁ VENDRÍA LO MÁS IMPORTANTE QUE ES ESTABLECER LA COMUNICACIÓN
-                            CON EL EMBEBIDO */
+                        /*  iniciamos el servicio de bluetooth */
+                        String btAddress = dispositivo.getAddress();
+                        Intent i = new Intent(Bluetooth.this, ServicioBluetooth.class);
+                        i.putExtra("Direccion_Bluethoot", btAddress);
+                        startService(i);
                     }  else if (bondState == BluetoothDevice.BOND_NONE &&
                             bondPrevState == BluetoothDevice.BOND_BONDED) {
                         /* Dispositivo desemparejado */
                         mostrarToast("Desemparejado");
                     }
-                    deviceListAdapter.notifyDataSetChanged();
 
+                    deviceListAdapter.notifyDataSetChanged();
                     break;
             }
         }
     };
 
     private void mostrarListaDispositivos() {
-        //asocio el listado de los dispositovos pasado en el bundle al adaptador del Listview
         deviceListAdapter.setData(listaDispositivos);
-
-        //defino un listener en el boton emparejar del listview
         deviceListAdapter.setListener(listenerBotonEmparejar);
         listaDispositivosView.setAdapter(deviceListAdapter);
     }
@@ -297,8 +312,11 @@ public class Bluetooth extends AppCompatActivity {
             Method method = device.getClass().getMethod("createBond", (Class[]) null);
             method.invoke(device, (Object[]) null);
         } catch (Exception e) {
-            e.printStackTrace();
+            mostrarToast("Error al emparejar.");
+            Log.d("Bluetooth", "Error al desemparejar: " + e.getMessage());
         }
+
+        mostrarToast("" + device.getName() + " emparejado.");
     }
 
     private void unpairDevice(BluetoothDevice device) {
@@ -306,12 +324,16 @@ public class Bluetooth extends AppCompatActivity {
             Method method = device.getClass().getMethod("removeBond", (Class[]) null);
             method.invoke(device, (Object[]) null);
         } catch (Exception e) {
-            e.printStackTrace();
+            mostrarToast("Error al desemparejar.");
+            Log.d("Bluetooth", "Error al emparejar: " + e.getMessage());
         }
+
+        mostrarToast("" + device.getName() + " desemparejado.");
     }
 
-    //Metodo que actua como Listener de los eventos que ocurren en los componentes graficos de la activty
-    private DeviceListAdapter.OnPairButtonClickListener listenerBotonEmparejar = new DeviceListAdapter.OnPairButtonClickListener() {
+    /* Botón Emparejar / Desemparejar */
+    private DeviceListAdapter.OnPairButtonClickListener listenerBotonEmparejar =
+            new DeviceListAdapter.OnPairButtonClickListener() {
         @Override
         public void onPairButtonClick(int position) {
             //Obtengo los datos del dispostivo seleccionado del listview por el usuario
@@ -319,12 +341,13 @@ public class Bluetooth extends AppCompatActivity {
 
             //Se checkea si el dipositivo ya está emparejado
             if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                //Si esta emparejado,quiere decir que se selecciono desemparjar y entonces se le desempareja
+                // Se desempareja el dispositivo
+                mostrarToast("Desemparejando");
                 unpairDevice(device);
             } else {
-                //Si no esta emparejado,quiere decir que se selecciono emparjar y entonces se le empareja
+                // Se empareja el dispositivo
                 mostrarToast("Emparejando");
-                posicionListBluethoot = position;
+                posDeviceList = position;
                 pairDevice(device);
             }
         }
@@ -332,5 +355,12 @@ public class Bluetooth extends AppCompatActivity {
 
     private void mostrarToast (String mensaje) {
         Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
+    }
+
+    private class ServicioBluetoothReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mostrarToast(intent.getAction());
+        }
     }
 }
