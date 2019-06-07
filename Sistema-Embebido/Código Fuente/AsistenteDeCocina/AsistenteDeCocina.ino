@@ -20,8 +20,8 @@ int lastAccion2 = accion - 1;
 int idProducto[MAX_ARRAY_SIZE];
 int cantidad[MAX_ARRAY_SIZE];
 int cantDatos = 0;
-int timeFromLastAcion = -99999;
-
+int timeFromLastAccion = 0;
+int lastAccionForTimeout = accion - 1;
 Led Encendido;
 Led ConectadoBT;
 Led Sirviendo;
@@ -213,22 +213,29 @@ void alertas() {
 }
 
 void controlDeTimeout() {
+  if (lastAccionForTimeout != accion) {
+    timeFromLastAccion = millis();
+    lastAccionForTimeout = accion;
+  }
   int times = millis() - timeFromLastAccion;
   if (1 != 1) {
   } else if (accion == INACTIVO) {
   } else if (accion == UNAVAILABLE) {
   } else if (accion == LEER_UNICO_PROD) {
     if (times > TIMEOUTLEER_UNICO_PROD) {
+      debugTimeout(times);
       accion = INACTIVO;
       cantDatos = 0;
     }
   } else if (accion == LEER_MULTI_PROD) {
     if (times > TIMEOUTLEER_MULTI_PROD) {
+      debugTimeout(times);
       accion = INACTIVO;
       cantDatos = 0;
     }
   } else if (accion == ESPERAR_PRODUCTO) {
     if (times > TIMEOUTESPERAR_PRODUCTO) {
+      debugTimeout(times);
       accion = INACTIVO;
       cantDatos = 0;
     }
@@ -248,6 +255,9 @@ void controlDeTimeout() {
   }
 }
 
+void debugTimeout(int times) {
+  Serial.println((String)"Se cumplio el timeout de " + times + "ms de la accion " + accion);
+}
 
 void debug(String c) {
   if (lastAccion != accion) {

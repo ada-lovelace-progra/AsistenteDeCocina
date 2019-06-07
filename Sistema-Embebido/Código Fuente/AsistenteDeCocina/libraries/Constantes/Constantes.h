@@ -8,7 +8,6 @@
 
 /////// constantes que se repiten en java al igual que los leds
 	 // constantes accion
-enum{
 #define INACTIVO            -1
 #define LEER_UNICO_PROD		 1
 #define LEER_MULTI_PROD		 2
@@ -25,7 +24,7 @@ enum{
 #define VALIDAR_HUMEDAD     92 //5C
 #define BT_CONECTADO        93 //5D
 #define BT_DESCONECTADO     94 //5E
-};
+
 	 // constantes 
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
@@ -69,5 +68,9 @@ enum{
 #define BTNAME			"LaCocinaDeAda"
 #define PASSWORD	    "12345"
 
-	
+// definicione de TIMEOUTS
+#define TIMEOUTLEER_UNICO_PROD  1000
+#define TIMEOUTLEER_MULTI_PROD  1000
+#define TIMEOUTESPERAR_PRODUCTO 1000
+
 #endif
