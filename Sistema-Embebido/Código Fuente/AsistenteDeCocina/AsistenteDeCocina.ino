@@ -20,6 +20,7 @@ int lastAccion2 = accion - 1;
 int idProducto[MAX_ARRAY_SIZE];
 int cantidad[MAX_ARRAY_SIZE];
 int cantDatos = 0;
+int timeFromLastAcion = -99999;
 
 Led Encendido;
 Led ConectadoBT;
@@ -62,17 +63,11 @@ void loop() {
   if (bt.isConected()) {
     ConectadoBT = HIGH;
     debug("init loop ");
-    if (accion == INACTIVO) {
+    if (accion == INACTIVO || accion == UNAVAILABLE) {
       debug();
       accion = bt.leer();
       if (accion != UNAVAILABLE)
-        Serial.println((String)"Accion Seteada con '" + accion + "' desde INACTIVO");
-
-    } else if (accion == UNAVAILABLE) {
-      debug();
-      accion = bt.leer();
-      if (accion != UNAVAILABLE)
-        Serial.println((String)"Accion Seteada con '" + accion + "' desde UNAVAIBLE");
+        Serial.println((String)"Accion Seteada con '" + accion + "'");
 
     } else if (accion == LEER_UNICO_PROD) {
       debug();
@@ -131,21 +126,20 @@ void loop() {
       debug();
       //quedan pendientes por falta de tiempo y financiamiento
       delay(600);
-      
+
     } else if (accion == ESPERAR_NO_PRODUCTO) {
       debug();
-      //        if (!digitalRead(presencia)) {
-
-      Serial.print("boton NO Presionado");
-      if (cantDatos--) {
-        accion = ESPERAR_PRODUCTO;
+      if (!digitalRead(presencia)) {
+        Serial.print("boton NO Presionado");
+        if (cantDatos--) {
+          accion = ESPERAR_PRODUCTO;
+        }
+        else {
+          accion = INACTIVO;
+        }
       }
-      else {
-        accion = INACTIVO;
-      }
-      //        }
-      //        else
-      Serial.print("boton Presionado");
+      else
+        Serial.print("boton Presionado");
 
     } else if (accion == CANT_NO_DISP) {
       debug();
@@ -177,19 +171,19 @@ void loop() {
 
     } else if (accion == BT_CONECTADO) {
       debug();
-
+      accion = INACTIVO;
     } else if (accion == BT_DESCONECTADO) {
       debug();
-
+      accion = INACTIVO;
     } else {
       Serial.print("entro por default");
       accion = INACTIVO;
     }
-    //  bt.enviarInfo(accion, bal.pesoBalanza, bal.pesoRequerido);
   } else
     ConectadoBT = (millis() % 450 > 200);
 
   alertas();
+  controlDeTimeout();
   //  delay(500);
 }
 
@@ -215,7 +209,43 @@ void alertas() {
     noTone(zumbador);
   }
 
-  //bt.enviar((String)"humedad: " + ht.leerHumedad() + "\ttemperatura: " + ht.leerHumedad() + "\tBalanza: " + bal.leerBalanza() + "Acc: " + accion);
+  bt.enviar((String)"humedad: " + ht.leerHumedad() + "\ttemperatura: " + ht.leerTemperatura() + "\tBalanza: " + bal.leerBalanza() + "Acc: " + accion);
+}
+
+void controlDeTimeout() {
+  int times = millis() - timeFromLastAccion;
+  if (1 != 1) {
+  } else if (accion == INACTIVO) {
+  } else if (accion == UNAVAILABLE) {
+  } else if (accion == LEER_UNICO_PROD) {
+    if (times > TIMEOUTLEER_UNICO_PROD) {
+      accion = INACTIVO;
+      cantDatos = 0;
+    }
+  } else if (accion == LEER_MULTI_PROD) {
+    if (times > TIMEOUTLEER_MULTI_PROD) {
+      accion = INACTIVO;
+      cantDatos = 0;
+    }
+  } else if (accion == ESPERAR_PRODUCTO) {
+    if (times > TIMEOUTESPERAR_PRODUCTO) {
+      accion = INACTIVO;
+      cantDatos = 0;
+    }
+  } else if (accion == SENSAR_PESO) {
+  } else if (accion == BAJAR_BRAZO) {
+  } else if (accion == SENSAR_PESO_SINFIN) {
+  } else if (accion == EXTRAER_PRODUCTO) {
+  } else if (accion == SUBIR_BRAZO) {
+  } else if (accion == ESPERAR_NO_PRODUCTO) {
+  } else if (accion == CANT_NO_DISP) {
+  } else if (accion == SETEAR_IDDISP) {
+  } else if (accion == ENVIAR_IDDISP) {
+  } else if (accion == VALIDAR_HUMEDAD) {
+  } else if (accion == BT_CONECTADO) {
+  } else if (accion == BT_DESCONECTADO) {
+  } else {
+  }
 }
 
 
