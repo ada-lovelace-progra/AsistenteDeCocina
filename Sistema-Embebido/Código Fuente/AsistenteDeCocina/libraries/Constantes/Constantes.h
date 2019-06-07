@@ -8,6 +8,7 @@
 
 /////// constantes que se repiten en java al igual que los leds
 	 // constantes accion
+enum{
 #define INACTIVO            -1
 #define LEER_UNICO_PROD		 1
 #define LEER_MULTI_PROD		 2
@@ -17,13 +18,14 @@
 #define SENSAR_PESO_SINFIN	 6
 #define EXTRAER_PRODUCTO	 7
 #define SUBIR_BRAZO			 8
-#define ESPERAR_NO_PRODUCTO 99
+#define ESPERAR_NO_PRODUCTO  9
 #define CANT_NO_DISP		10 //A
 #define SETEAR_IDDISP       90 //5A
 #define ENVIAR_IDDISP       91 //5B
 #define VALIDAR_HUMEDAD     92 //5C
 #define BT_CONECTADO        93 //5D
 #define BT_DESCONECTADO     94 //5E
+};
 	 // constantes 
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
