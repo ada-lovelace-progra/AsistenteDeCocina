@@ -1,2 +1,6 @@
 
 *.ini
+Sistema-Embebido/Código Fuente/AsistenteDeCocina/libraries/Adafrui*
+Sistema-Embebido/Código Fuente/AsistenteDeCocina/libraries/Queuetu*
+Sistema-Embebido/Código Fuente/AsistenteDeCocina/libraries/DHT/*
+Sistema-Embebido/Código Fuente/AsistenteDeCocina/libraries/DH*

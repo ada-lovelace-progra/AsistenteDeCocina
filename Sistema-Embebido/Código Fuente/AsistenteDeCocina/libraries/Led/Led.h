@@ -8,6 +8,7 @@
 
 class Led{
 public:
+	Led();
 	Led(int pin);
 	int operator=(int mode);
 	float operator=(float mode);
