@@ -21,6 +21,7 @@ public class ServicioBluetooth extends Service {
     private ConnectedThread connectedThread;
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static String address = null;
+    private LocalBinder binder = new LocalBinder();
 
     @Override
     public void onCreate() {
@@ -30,7 +31,8 @@ public class ServicioBluetooth extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return new Binder();
+
+        return binder;
     }
 
     public class LocalBinder extends Binder {
@@ -74,7 +76,7 @@ public class ServicioBluetooth extends Service {
 
             //I send a character when resuming.beginning transmission to check device is connected
             //If it is not an exception will be thrown in the write method and finish() will be called
-            connectedThread.write("x");
+            connectedThread.write("]");
         }
 
         Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
@@ -107,7 +109,8 @@ public class ServicioBluetooth extends Service {
         //metodo run del hilo, que va a entrar en una espera activa para recibir los msjs del HC05
         public void run() {
             Log.d("ServicioBluetooth", "hilo secundario en ejecución.");
-            byte[] buffer = new byte[256];
+            byte[] buffer = new byte[1024];
+            String stringBuffer = new String();
             int bytes;
 
             //el hilo secundario se queda esperando mensajes del HC05
@@ -116,10 +119,18 @@ public class ServicioBluetooth extends Service {
                     //se leen los datos del Bluethoot
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, 0, bytes);
+                    stringBuffer += readMessage;
+                    int index = stringBuffer.indexOf("\n");
 
-                    //se muestran en el layout de la activity, utilizando el handler del hilo
-                    // principal antes mencionado
-                    sendBroadcast(new Intent(readMessage));
+                    if (index > 0) {
+                        //se muestran en el layout de la activity, utilizando el handler del hilo
+                        // principal antes mencionado
+                        //sendBroadcast(new Intent(readMessage));
+                        Log.d("ServicioBluetooth", "Cadena: " + stringBuffer.substring(0, index));
+                        stringBuffer = stringBuffer.substring(index);
+                    } else if (index == 0) {
+                        stringBuffer = stringBuffer.substring(1);
+                    }
                 } catch (IOException e) {
                     Log.d("ServicioBluetooth", "excepción en la ejecución del hilo secundario: " + e.getMessage());
                     break;

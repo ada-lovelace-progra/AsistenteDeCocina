@@ -3,12 +3,15 @@ package com.example.appsistentedecocina;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +43,8 @@ public class Bluetooth extends AppCompatActivity {
     private DeviceListAdapter deviceListAdapter;
     private int posDeviceList;
     private ServicioBluetoothReceiver sbtReceiver;
+    ServicioBluetooth mBoundService;
+    boolean mServiceBound = false;
 
     public static final int REQ_COD = 666;
 
@@ -215,6 +220,7 @@ public class Bluetooth extends AppCompatActivity {
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
 
         // se registra el receiver para capturar los eventos sobre Bluetooth
         registerReceiver(receiver, filter);
@@ -278,8 +284,9 @@ public class Bluetooth extends AppCompatActivity {
                         /*  iniciamos el servicio de bluetooth */
                         String btAddress = dispositivo.getAddress();
                         Intent i = new Intent(Bluetooth.this, ServicioBluetooth.class);
-                        i.putExtra("Direccion_Bluethoot", btAddress);
+                        i.putExtra("btAddress", btAddress);
                         startService(i);
+                        bindService(i, mServiceConnection, Context.BIND_AUTO_CREATE);
                     }  else if (bondState == BluetoothDevice.BOND_NONE &&
                             bondPrevState == BluetoothDevice.BOND_BONDED) {
                         /* Dispositivo desemparejado */
@@ -363,4 +370,19 @@ public class Bluetooth extends AppCompatActivity {
             mostrarToast(intent.getAction());
         }
     }
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mServiceBound = false;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ServicioBluetooth.LocalBinder myBinder = (ServicioBluetooth.LocalBinder) service;
+            mBoundService = myBinder.getService();
+            mServiceBound = true;
+        }
+    };
 }
