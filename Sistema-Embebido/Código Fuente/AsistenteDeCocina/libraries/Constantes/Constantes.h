@@ -25,6 +25,13 @@
 #define BT_CONECTADO        93 //5D
 #define BT_DESCONECTADO     94 //5E
 
+// definicione de TIMEOUTS
+#define SEC 						000
+#define TIMEOUTLEER_UNICO_PROD  	10000
+#define TIMEOUTLEER_MULTI_PROD  	10000
+#define TIMEOUTESPERAR_PRODUCTO 	60000
+#define TIMEOUTESPERAR_NO_PRODUCTO 	60000
+
 	 // constantes 
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
@@ -63,14 +70,9 @@
 #define zumbadorTime       150
 #define FRECUENCIA		   329
 #define fcorreccion			 1 //se debe medir la balanza con un peso conocido antes de setear el valor
-#define BT_IS_SET		 false
+#define BT_IS_SET		  true
 #define BTSERIAL	   Serial3
 #define BTNAME			"LaCocinaDeAda"
 #define PASSWORD	    "12345"
-
-// definicione de TIMEOUTS
-#define TIMEOUTLEER_UNICO_PROD  1000
-#define TIMEOUTLEER_MULTI_PROD  1000
-#define TIMEOUTESPERAR_PRODUCTO 1000
 
 #endif

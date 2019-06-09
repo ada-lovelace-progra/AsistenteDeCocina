@@ -65,8 +65,8 @@ void loop() {
     debug("init loop ");
     if (accion == INACTIVO || accion == UNAVAILABLE) {
       debug();
-      accion = bt.leer();
-      if (accion != UNAVAILABLE)
+      accion = bt.leerAccion();
+      if (accion != INACTIVO)
         Serial.println((String)"Accion Seteada con '" + accion + "'");
 
     } else if (accion == LEER_UNICO_PROD) {
@@ -245,6 +245,11 @@ void controlDeTimeout() {
   } else if (accion == EXTRAER_PRODUCTO) {
   } else if (accion == SUBIR_BRAZO) {
   } else if (accion == ESPERAR_NO_PRODUCTO) {
+    if (times > TIMEOUTESPERAR_NO_PRODUCTO) {
+      debugTimeout(times);
+      accion = INACTIVO;
+      cantDatos = 0;
+    }
   } else if (accion == CANT_NO_DISP) {
   } else if (accion == SETEAR_IDDISP) {
   } else if (accion == ENVIAR_IDDISP) {

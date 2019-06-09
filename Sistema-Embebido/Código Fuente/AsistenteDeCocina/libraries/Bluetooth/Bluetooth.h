@@ -14,6 +14,7 @@ public:
   Bluetooth(int tX, int rX);
   char leerBlock();
   char leer();
+  int leerAccion();
   char* leerString(char* c);
   bool isConected();
   int leerNbytes(int c);
