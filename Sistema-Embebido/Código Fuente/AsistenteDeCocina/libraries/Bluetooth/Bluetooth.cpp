@@ -50,11 +50,11 @@ char Bluetooth::leer() {
 
 char* Bluetooth::leerString(char* c){
   int i=-1;
-  char t=(char)this->leer();
+  char t=this->leer();
 
   while(t){
     c[++i]=t;
-    t=(char)this->leer();
+    t=this->leer();
   }
   return c;
 }
@@ -81,9 +81,11 @@ bool Bluetooth::isConected() {
 
 int Bluetooth::leerNbytes(int c){
   c--;
+  char l = this->leerBlock();
   if(!c)
-    return this->leerBlock();
-  return this->leerBlock() * pow(256,c) + this->leerNbytes(c); 
+    return (int)(l);
+
+  return (l << (8*c)) + this->leerNbytes(c); 
 }
 
 void Bluetooth::enviar(String c){
