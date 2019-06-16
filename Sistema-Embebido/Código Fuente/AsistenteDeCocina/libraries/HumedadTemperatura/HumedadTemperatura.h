@@ -11,8 +11,8 @@
 
 class HumedadTemperatura{
 public:
-	HumedadTemperatura();
-  HumedadTemperatura(int pin);
+  HumedadTemperatura();
+  void begin(int pin);
   float leerHumedad();
   float leerTemperatura();
   void actualizarDatos();

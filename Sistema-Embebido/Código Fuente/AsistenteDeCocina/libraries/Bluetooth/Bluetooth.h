@@ -10,22 +10,21 @@
 
 class Bluetooth{
 public:
-  Bluetooth();
-  Bluetooth(int tX, int rX);
+  void begin(int tX, int rX);
   char leerBlock();
   char leer();
   int leerAccion();
   char* leerString(char* c);
   bool isConected();
-  int leerNbytes(int c);
+  long leerNbytes(int c);
   void enviar(String c);
-  void enviar(char* c);
+  void enviar(const char* c);
   void enviar(int c);
-  void enviar(int id, int dato);
-  void enviarInfo(int accion, int pesoBalanza, int pesoRequerido);
-  int leerCantidad();
+  void enviarl(long c);
+  void enviar(short id, long dato);
+  long leerCantidad();
   int leerCantDatos();
-  int leerID();
+  short leerID();
 
 private:
   bool conected;

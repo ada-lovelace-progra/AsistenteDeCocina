@@ -8,8 +8,7 @@
 
 class Led{
 public:
-	Led();
-	Led(int pin);
+	void begin(int pin);
 	int operator=(int mode);
 	float operator=(float mode);
 	double operator=(double mode);

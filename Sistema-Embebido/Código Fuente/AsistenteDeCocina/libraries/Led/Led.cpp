@@ -1,8 +1,6 @@
 #include "led.h"
 
-Led::Led(){}
-
-Led::Led(int i){
+void Led::begin(int i){
   Serial.println("Construyendo Led");
 	pin=i;
 	pinMode(pin, OUTPUT);
@@ -13,12 +11,15 @@ Led::Led(int i){
 
 int Led::operator=(int i){
 	digitalWrite(pin, i);
+	return i;
 }
 
 float Led::operator=(float i){
 	analogWrite(pin, i);
+	return i;
 }
 
 double Led::operator=(double i){
 	analogWrite(pin, i);
+	return i;
 }
