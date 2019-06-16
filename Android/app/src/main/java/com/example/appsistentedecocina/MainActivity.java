@@ -1,12 +1,11 @@
 package com.example.appsistentedecocina;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends NGActivity {
 
     private Button btnIng;
     private Button btnRec;
@@ -42,9 +41,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick( View view){
                 Intent intent;
-                intent=new Intent(MainActivity.this,Bluetooth.class);
+                intent=new Intent(MainActivity.this, BluetoothBusqueda.class);
                 startActivity(intent);
             }
         });
+
+        iniciarServicioBluetooth();
+        vincularServicioBluetooth();
     }
 }
