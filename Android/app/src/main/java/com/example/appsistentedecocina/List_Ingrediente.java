@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import static android.app.PendingIntent.getActivity;
 
-public class List_Ingrediente extends AppCompatActivity {
+public class List_Ingrediente extends NGActivity {
 
     private ListView listview;
     private AdaptadorIngrediente adapter;

@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -16,11 +15,14 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 public class ServicioBluetooth extends Service {
+
+    /* Constantes utilizadas para comunicación Bluetooth */
+    public static final String ACTION_ERROR = "ACTION_ERROR";
+
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private ConnectedThread connectedThread;
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static String address = null;
     private LocalBinder binder = new LocalBinder();
 
     @Override
@@ -31,7 +33,6 @@ public class ServicioBluetooth extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-
         return binder;
     }
 
@@ -47,11 +48,37 @@ public class ServicioBluetooth extends Service {
         //obtengo el adaptador del bluetooth
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
+
+        /*new CountDownTimer(5000, 1000) {
+            public void onFinish() {
+                Log.d("ServicioBluetooth", "Hola enviado.");
+                sendBroadcast(new Intent("Hola"));
+            }
+
+            public void onTick(long millisUntilFinished) {
+                // millisUntilFinished    The amount of time until finished.
+            }
+        }.start();*/
+
+        return START_STICKY;
+    }
+
+    public void escribir(String s) {
+        if(connectedThread != null) {
+            connectedThread.write(s);
+            Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + s);
+        } else {
+            Intent i = new Intent(ACTION_ERROR);
+            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
+            sendBroadcast(i);
+        }
+    }
+
+    public void conectar (String btAddress) {
         if (btAdapter != null) {
             //se realiza la conexion del Bluetooth crea y se conectandose a a traves de un socket
-            Bundle extras = intent.getExtras();
-            address = extras.getString("btAddress");
-            BluetoothDevice device = btAdapter.getRemoteDevice(address);
+            BluetoothDevice device = btAdapter.getRemoteDevice(btAddress);
 
             try {
                 btSocket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
@@ -78,9 +105,6 @@ public class ServicioBluetooth extends Service {
             //If it is not an exception will be thrown in the write method and finish() will be called
             connectedThread.write("]");
         }
-
-        Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
-        return START_STICKY;
     }
 
     private class ConnectedThread extends Thread {

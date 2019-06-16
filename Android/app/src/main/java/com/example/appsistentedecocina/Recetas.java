@@ -3,7 +3,7 @@ package com.example.appsistentedecocina;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Recetas extends AppCompatActivity {
+public class Recetas extends NGActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
