@@ -18,13 +18,12 @@ Además, puede sensar la humedad y temperatura para determinar si los alimentos 
 - Sensor de Humedad relativa y Temperatura Dht11
 
 ### Sensores Digitales
-- Sensor Obstaculos Infrarrojo
+- Sensor Obstaculos Infrarrojo FC-51
 
 ### Actuadores
-- Motor y Rueda Arduino
-- Motor Servo 360°
-- Led Rojo 3mm
-- Led Verde 3mm
+- Motor de Corriente Continua
+- Buzzer
+- Luces LED
 
 ### Conectividad
  - Módulo Bluetooth Hc-06
