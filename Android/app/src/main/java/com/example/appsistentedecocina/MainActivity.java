@@ -33,7 +33,7 @@ public class MainActivity extends NGActivity {
             @Override
             public void onClick( View view){
                 Intent intent;
-                intent = new Intent(MainActivity.this,Recetas.class);
+                intent = new Intent(MainActivity.this, Menu_Recetas.class);
                 startActivity(intent);
             }
         });

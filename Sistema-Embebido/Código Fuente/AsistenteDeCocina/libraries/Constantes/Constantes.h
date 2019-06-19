@@ -26,13 +26,14 @@
 #define BT_DESCONECTADO     94 //5E
 
 // definicione de TIMEOUTS
-#define SEC 						000
 #define TIMEOUTLEER_UNICO_PROD  	10000
 #define TIMEOUTLEER_MULTI_PROD  	10000
 #define TIMEOUTESPERAR_PRODUCTO 	60000
 #define TIMEOUTESPERAR_NO_PRODUCTO 	60000
 
 	 // constantes 
+#define HUMEDAD 			95
+#define TEMPERATURA			96
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
 
@@ -41,8 +42,8 @@
 #define debugIn              3
 
 /////// Sensores
-#define tem_hum            A13	
-#define presencia           25	//falta
+#define tem_hum             28
+#define presencia           25	
 #define btPairing           31	//falta
 #define btTx				14  
 #define btRx				15	
@@ -50,10 +51,9 @@
 #define balSck	            39 	
 
 /////// Actuadores
-#define MT1					40
-#define MV1					41
-#define MT2					44
-#define MV2					45
+#define SF1					40
+#define SF2					41
+#define SFP					44
 
 /////// Actuadores-Alertas      
 #define ledEncendido        13 //rojo 
@@ -69,7 +69,7 @@
 #define tiempoZumbador     150
 #define zumbadorTime       150
 #define FRECUENCIA		   329
-#define fcorreccion			 1 //se debe medir la balanza con un peso conocido antes de setear el valor
+#define fcorreccion			-1 //se debe medir la balanza con un peso conocido antes de setear el valor
 #define BT_IS_SET		  true
 #define BTSERIAL	   Serial3
 #define BTNAME			"LaCocinaDeAda"

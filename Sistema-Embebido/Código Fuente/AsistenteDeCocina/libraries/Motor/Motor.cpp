@@ -1,17 +1,13 @@
 #include <Motor.h>
 
-Motor::Motor(){}
+void Motor::begin(int pinSF1, int pinSF2, int pinSFP){
+	this->pinSF1 = pinSF1;
+	this->pinSF2 = pinSF2;
+	this->pinSFP = pinSFP;
 
-Motor::Motor(int pinMT1, int pinMV1, int pinMT2, int pinMV2){
-	this->pinMT1 = pinMT1;
-	this->pinMV1 = pinMV1;
-	this->pinMT2 = pinMT2;
-	this->pinMV2 = pinMT2;
-
-	pinMode(this->pinMT1,OUTPUT);
-	pinMode(this->pinMV1,OUTPUT);
-	pinMode(this->pinMT2,OUTPUT);
-	pinMode(this->pinMV2,OUTPUT);
+	pinMode(this->pinSF1,OUTPUT);
+	pinMode(this->pinSF2,OUTPUT);
+	pinMode(this->pinSFP,OUTPUT);
 }
 
 float Motor::operator=(float mode){
@@ -26,22 +22,19 @@ float Motor::operator=(float mode){
 }
 
 void Motor::horario(float mode){
-	analogWrite(this->pinMT1,mode); 
-	analogWrite(this->pinMV1,mode); 
-	digitalWrite(this->pinMT2,LOW); 
-	digitalWrite(this->pinMV2,LOW); 
+	digitalWrite(this->pinSF1,HIGH); 
+	digitalWrite(this->pinSF2,LOW); 
+	analogWrite(this->pinSFP,mode); 
 }
 
 void Motor::antihorario(float mode){
-	digitalWrite(this->pinMT1,LOW); 
-	digitalWrite(this->pinMV1,LOW); 
-	analogWrite(this->pinMT2,mode); 
-	analogWrite(this->pinMV2,mode); 
+	digitalWrite(this->pinSF1,LOW);
+	digitalWrite(this->pinSF2,HIGH); 
+	analogWrite(this->pinSFP,mode); 
 }
 
 void Motor::parar(){
-	digitalWrite(this->pinMT1,LOW); 
-	digitalWrite(this->pinMV1,LOW);
-	digitalWrite(this->pinMT2,LOW); 
-	digitalWrite(this->pinMV2,LOW); 
+	digitalWrite(this->pinSF1,LOW); 
+	digitalWrite(this->pinSF2,LOW);
+	digitalWrite(this->pinSFP,LOW); 
 }

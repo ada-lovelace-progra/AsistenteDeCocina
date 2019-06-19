@@ -1,7 +1,5 @@
 #ifndef EepromAda_h
 #define EepromAda_h
-#include <Bluetooth.h>
-
 #if ARDUINO >= 100
 #include "Arduino.h"
 #else
@@ -10,8 +8,7 @@
 
 class EEPROMAda{
 public:
-	EEPROMAda();
-	EEPROMAda(int a);
+	void begin();
 	void escribirID_DIS(char * nombre);
 	char* leerID_DISP();
 

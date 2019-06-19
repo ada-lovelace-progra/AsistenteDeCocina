@@ -2,9 +2,10 @@
 
 HumedadTemperatura::HumedadTemperatura() : dht(DHT(tem_hum, DHT11)){}
 
-HumedadTemperatura::HumedadTemperatura(int pin) : dht(DHT(pin, DHT11)){
+void HumedadTemperatura::begin(int pin){
 	Serial.println("Construyendo HumedadTemperatura");
-  	dht.begin();
+	dht = DHT(pin, DHT11);
+	dht.begin();
 }
 
 float HumedadTemperatura::leerHumedad(){

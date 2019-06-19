@@ -1,8 +1,8 @@
 #include <EEPROMAda.h>
 #include <Led.h>
 #include <Constantes.h>
-#include <bluetooth.h>
-#include <balanza.h>
+#include <Bluetooth.h>
+#include <Balanza.h>
 #include <HumedadTemperatura.h>
 #include <Motor.h>
 
@@ -20,8 +20,13 @@ int lastAccion2 = accion - 1;
 int idProducto[MAX_ARRAY_SIZE];
 int cantidad[MAX_ARRAY_SIZE];
 int cantDatos = 0;
-int timeFromLastAccion = 0;
+
 int lastAccionForTimeout = accion - 1;
+unsigned long timeFromLastAccion = 0;
+
+bool alertaHumedad = false;
+bool alertaTemperatura = false;
+
 Led Encendido;
 Led ConectadoBT;
 Led Sirviendo;
@@ -40,17 +45,17 @@ void setup() {
   // necesario para desconectar "a la fuerza" el bt
   pinMode(alimentacionBT      , OUTPUT);
   digitalWrite(debugOut, HIGH);
-  sinFin = Motor(MT1, MV1, MT2, MV2);
-  bal = Balanza(balDt, balSck);
-  ht = HumedadTemperatura(tem_hum);
-  eeada = EEPROMAda(1);
-  bt = Bluetooth(btTx, btRx);
+  sinFin.begin(SF1, SF2, SFP);
+  bal.begin(balDt, balSck);
+  ht.begin(tem_hum);
+  eeada.begin();
+  bt.begin(btTx, btRx);
 
-  Encendido        = Led(ledEncendido);
-  ConectadoBT      = Led(ledConectadoBT);
-  Sirviendo        = Led(ledSirviendo);
-  Disponible       = Led(ledDisponible);
-  CantNoDisponible = Led(ledCantNoDisponible);
+  Encendido.begin(ledEncendido);
+  ConectadoBT.begin(ledConectadoBT);
+  Sirviendo.begin(ledSirviendo);
+  Disponible.begin(ledDisponible);
+  CantNoDisponible.begin(ledCantNoDisponible);
   tone(zumbador, FRECUENCIA);
   delay(100);
   noTone(zumbador);
@@ -63,122 +68,7 @@ void loop() {
   if (bt.isConected()) {
     ConectadoBT = HIGH;
     debug("init loop ");
-    if (accion == INACTIVO || accion == UNAVAILABLE) {
-      debug();
-      accion = bt.leerAccion();
-      if (accion != INACTIVO)
-        Serial.println((String)"Accion Seteada con '" + accion + "'");
-
-    } else if (accion == LEER_UNICO_PROD) {
-      debug();
-      cantDatos = 1;
-      idProducto[0] = bt.leerID();
-      cantidad[0] = bt.leerCantidad();
-      accion = ESPERAR_NO_PRODUCTO;
-      Serial.println((String)"Id recibido: " + idProducto[0] + " con un peso de " + cantidad[0]);
-
-    } else if (accion == LEER_MULTI_PROD) {
-      debug();
-      int temp = cantDatos = bt.leerCantDatos();
-      cantDatos--;
-      while (--temp) {
-        idProducto[temp] = bt.leerID();
-        cantidad[temp] = bt.leerCantidad();
-        Serial.println((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp]);
-      }
-      accion = ESPERAR_NO_PRODUCTO;
-
-    } else if (accion == ESPERAR_PRODUCTO) {
-      debug();
-      if (digitalRead(presencia)) {
-        //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
-        accion = SENSAR_PESO;
-      }
-
-    } else if (accion == SENSAR_PESO) {
-      debug();
-      if (cantidad[cantDatos] < bal.leerPesoBalanza()) {
-        accion = BAJAR_BRAZO;
-      }
-      else {
-        accion = CANT_NO_DISP;
-      }
-
-    } else if (accion == BAJAR_BRAZO) {
-      debug();
-      //quedan pendientes por falta de tiempo y financiamiento
-      delay(600);
-
-    } else if (accion == SENSAR_PESO_SINFIN) {
-      debug();
-      bal.setPesoADepositar(cantidad[cantDatos]);
-      accion = EXTRAER_PRODUCTO;
-
-    } else if (accion == EXTRAER_PRODUCTO) {
-      debug();
-      sinFin = 0.5;
-      if (bal.isPesoAlcanzado()) {
-        sinFin = OFF;
-        accion = SUBIR_BRAZO;
-      }
-
-    } else if (accion == SUBIR_BRAZO) {
-      debug();
-      //quedan pendientes por falta de tiempo y financiamiento
-      delay(600);
-
-    } else if (accion == ESPERAR_NO_PRODUCTO) {
-      debug();
-      if (!digitalRead(presencia)) {
-        Serial.print("boton NO Presionado");
-        if (cantDatos--) {
-          accion = ESPERAR_PRODUCTO;
-        }
-        else {
-          accion = INACTIVO;
-        }
-      }
-      else
-        Serial.print("boton Presionado");
-
-    } else if (accion == CANT_NO_DISP) {
-      debug();
-      CantNoDisponible = HIGH;
-      int idprod = idProducto[cantDatos];
-      bt.enviar(CANT_NO_DISP, idprod);
-      delay(500);
-      CantNoDisponible = LOW;
-      accion = INACTIVO;
-
-    } else if (accion == SETEAR_IDDISP) {
-      debug();
-      bt.leerString(id_dispositivo);
-      eeada.escribirID_DIS(id_dispositivo);
-      accion = INACTIVO;
-
-    } else if (accion == ENVIAR_IDDISP) {
-      debug();
-      id_dispositivo = eeada.leerID_DISP();
-      bt.enviar(id_dispositivo);
-      accion = INACTIVO;
-
-    } else if (accion == VALIDAR_HUMEDAD) {
-      debug();
-      bt.enviar("humedad: ");
-      bt.enviar(ht.leerHumedad());
-      bt.enviar("temperatura: ");
-      bt.enviar(ht.leerHumedad());
-
-    } else if (accion == BT_CONECTADO) {
-      debug();
-      accion = INACTIVO;
-    } else if (accion == BT_DESCONECTADO) {
-      debug();
-      accion = INACTIVO;
-    } else {
-      Serial.print("entro por default");
-      accion = INACTIVO;
-    }
+    estados();
   } else
     ConectadoBT = (millis() % 450 > 200);
 
@@ -187,29 +77,123 @@ void loop() {
   //  delay(500);
 }
 
-//////////////////////////// ALERTAS
-void alertas() {
+void estados() {
+  if (accion == INACTIVO || accion == UNAVAILABLE) {
+    debug();
+    accion = bt.leerAccion();
+    if (accion != INACTIVO)
+      Serial.println((String)"Accion Seteada con '" + accion + "'");
 
-  Sirviendo = accion == EXTRAER_PRODUCTO;
+  } else if (accion == LEER_UNICO_PROD) {
+    debug();
+    cantDatos = 1;
+    idProducto[0] = bt.leerID();
+    cantidad[0] = bt.leerCantidad();
+    accion = ESPERAR_NO_PRODUCTO;
+    Serial.println((String)"Id recibido: " + idProducto[0] + " con un peso de " + cantidad[0]);
 
-  if (!bt.isConected())
-    ConectadoBT = (millis() % 450 > 200);
-  else
-    ConectadoBT = HIGH;
+  } else if (accion == LEER_MULTI_PROD) {
+    debug();
+    int temp = cantDatos = bt.leerCantDatos();
+    cantDatos--;
+    while (--temp) {
+      idProducto[temp] = bt.leerID();
+      cantidad[temp] = bt.leerCantidad();
+      Serial.println((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp]);
+    }
+    accion = ESPERAR_NO_PRODUCTO;
 
-  Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / 250) % 2);
+  } else if (accion == ESPERAR_PRODUCTO) {
+    debug();
+    if (digitalRead(presencia)) {
+      //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
+      accion = SENSAR_PESO;
+    }
 
-  if (zumbadorTime - millis() < tiempoZumbador) {
-    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
-      tone(zumbador, FRECUENCIA); // deberia hacer un pipipipi....
+  } else if (accion == SENSAR_PESO) {
+    debug();
+    if (cantidad[cantDatos] < bal.leerPesoBalanza()) {
+      accion = BAJAR_BRAZO;
+    }
+    else {
+      accion = CANT_NO_DISP;
+    }
+
+  } else if (accion == BAJAR_BRAZO) {
+    debug();
+    //quedan pendientes por falta de tiempo y financiamiento
+    delay(600);
+
+  } else if (accion == SENSAR_PESO_SINFIN) {
+    debug();
+    bal.setPesoADepositar(cantidad[cantDatos]);
+    accion = EXTRAER_PRODUCTO;
+
+  } else if (accion == EXTRAER_PRODUCTO) {
+    debug();
+    sinFin = 0.5;
+    if (bal.isPesoAlcanzado()) {
+      sinFin = OFF;
+      accion = SUBIR_BRAZO;
+    }
+
+  } else if (accion == SUBIR_BRAZO) {
+    debug();
+    //quedan pendientes por falta de tiempo y financiamiento
+    delay(600);
+
+  } else if (accion == ESPERAR_NO_PRODUCTO) {
+    debug();
+    if (!digitalRead(presencia)) {
+      Serial.print("boton NO Presionado");
+      if (cantDatos--) {
+        accion = ESPERAR_PRODUCTO;
+      }
+      else {
+        accion = INACTIVO;
+      }
+    }
     else
-      noTone(zumbador);
-  }
-  else {
-    noTone(zumbador);
-  }
+      Serial.print("boton Presionado");
 
-  bt.enviar((String)"humedad: " + ht.leerHumedad() + "\ttemperatura: " + ht.leerTemperatura() + "\tBalanza: " + bal.leerBalanza() + "Acc: " + accion);
+  } else if (accion == CANT_NO_DISP) {
+    debug();
+    CantNoDisponible = HIGH;
+    int idprod = idProducto[cantDatos];
+    bt.enviar(CANT_NO_DISP, idprod);
+    delay(2000);
+    CantNoDisponible = LOW;
+    accion = INACTIVO;
+
+  } else if (accion == SETEAR_IDDISP) {
+    debug();
+    bt.leerString(id_dispositivo);
+    eeada.escribirID_DIS(id_dispositivo);
+    accion = INACTIVO;
+
+  } else if (accion == ENVIAR_IDDISP) {
+    debug();
+    id_dispositivo = eeada.leerID_DISP();
+    bt.enviar(id_dispositivo);
+    accion = INACTIVO;
+
+  } else if (accion == VALIDAR_HUMEDAD) {
+    debug();
+    bt.enviar((char*)"humedad: ");
+    bt.enviarl(ht.leerHumedad());
+    bt.enviar((char*)"temperatura: ");
+    bt.enviarl(ht.leerTemperatura());
+
+  } else if (accion == BT_CONECTADO) {
+    debug();
+    accion = INACTIVO;
+  } else if (accion == BT_DESCONECTADO) {
+    debug();
+    accion = INACTIVO;
+  } else {
+    Serial.print("entro por default");
+    accion = INACTIVO;
+  }
 }
 
 void controlDeTimeout() {
@@ -217,9 +201,8 @@ void controlDeTimeout() {
     timeFromLastAccion = millis();
     lastAccionForTimeout = accion;
   }
-  int times = millis() - timeFromLastAccion;
-  if (1 != 1) {
-  } else if (accion == INACTIVO) {
+  unsigned int times = millis() - timeFromLastAccion;
+  if (accion == INACTIVO) {
   } else if (accion == UNAVAILABLE) {
   } else if (accion == LEER_UNICO_PROD) {
     if (times > TIMEOUTLEER_UNICO_PROD) {
@@ -260,6 +243,35 @@ void controlDeTimeout() {
   }
 }
 
+//////////////////////////// ALERTAS
+void alertas() {
+
+  Sirviendo = accion == EXTRAER_PRODUCTO;
+
+  if (!bt.isConected())
+    ConectadoBT = (millis() % 450 > 200);
+  else
+    ConectadoBT = HIGH;
+
+  Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / 250) % 2);
+
+  if (zumbadorTime - millis() < tiempoZumbador) {
+    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
+      tone(zumbador, FRECUENCIA);
+    else
+      noTone(zumbador);
+  }
+  else {
+    noTone(zumbador);
+  }
+
+  if(alertaHumedad)
+    bt.enviar(HUMEDAD, ht.leerHumedad());
+  if(alertaTemperatura)
+    bt.enviar(TEMPERATURA, ht.leerTemperatura());
+}
+
+//////////////////////////// DEBUG
 void debugTimeout(int times) {
   Serial.println((String)"Se cumplio el timeout de " + times + "ms de la accion " + accion);
 }

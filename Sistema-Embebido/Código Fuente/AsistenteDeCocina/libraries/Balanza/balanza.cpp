@@ -1,8 +1,6 @@
 #include <balanza.h>
 
-Balanza::Balanza(){}
-
-Balanza::Balanza(int data, int sck){
+void Balanza::begin(int data, int sck){
   Serial.println("Construyendo Balanza");
 	b.begin(data,sck);
 	b.set_scale(fcorreccion);
@@ -11,7 +9,7 @@ Balanza::Balanza(int data, int sck){
 
 double Balanza::leerBalanza(){
 //	double p = b.is_ready() ? (b.get_value(5)*1000)+1000 : -1;
-	return b.get_value();//p > 0 ? p : 0;
+	return 0-b.get_value();//p > 0 ? p : 0;
 }
 
 bool Balanza::isPesoAlcanzado(){

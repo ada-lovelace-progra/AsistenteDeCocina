@@ -1,12 +1,12 @@
 #include <Bluetooth.h>
-#include <Constantes.h>
 
-Bluetooth::Bluetooth(){}
-
-Bluetooth::Bluetooth(int tX, int rX){
+void Bluetooth::begin(int tX, int rX){
   Serial.println("Construyendo Bluetooth");
   BTSERIAL.begin(9600);
-    if(!BT_IS_SET){
+  if(tX != 14 || rX != 15)
+    Serial.print("LOS PINS ENVIADOS NO PERTENECEN A Serial3");
+  
+  if(!BT_IS_SET){
     this->enviar("AT");
     delay(1000);
     this->enviar("AT+NAME");
@@ -42,7 +42,7 @@ char Bluetooth::leer() {
   }
   else {
     if (r == BT_CONECTADO) {
-      conected = true;\
+      conected = true;
     }
   }
   return r;
@@ -50,47 +50,33 @@ char Bluetooth::leer() {
 
 char* Bluetooth::leerString(char* c){
   int i=-1;
-  char t=(char)this->leer();
+  char t=this->leer();
 
   while(t){
     c[++i]=t;
-    t=(char)this->leer();
+    t=this->leer();
   }
   return c;
 }
 
-void Bluetooth::enviarInfo(int accion, int pesoBalanza, int pesoRequerido) {
-  this->enviar(1);
-  this->enviar(accion);
-
-  if (accion == EXTRAER_PRODUCTO) {
-    this->enviar(ledSirviendo);
-    this->enviar((millis() % 500 > 250));
-  }
-
-  this->enviar(ledDisponible);
-  this->enviar(accion == INACTIVO);
-
-  this->enviar(ledCantNoDisponible);
-  this->enviar(pesoBalanza > pesoRequerido);
-}
-
 bool Bluetooth::isConected() {
-  return conected?true:this->leer()>-1;
+  return conected?true:this->leer()>=-1;
 }
 
-int Bluetooth::leerNbytes(int c){
+long Bluetooth::leerNbytes(int c){
   c--;
+  char l = this->leerBlock();
   if(!c)
-    return this->leerBlock();
-  return this->leerBlock() * pow(256,c) + this->leerNbytes(c); 
+    return (short)(l);
+
+  return (l << (8*c)) + this->leerNbytes(c); 
 }
 
 void Bluetooth::enviar(String c){
   BTSERIAL.println(c);
 }
 
-void Bluetooth::enviar(char* c){
+void Bluetooth::enviar(const char* c){
   BTSERIAL.print(c);
 }
 
@@ -98,21 +84,25 @@ void Bluetooth::enviar(int c){
   BTSERIAL.print(c);
 } 
 
-void Bluetooth::enviar(int id, int dato){
+void Bluetooth::enviarl(long c){
+  BTSERIAL.print(c);
+} 
+
+void Bluetooth::enviar(short id, long dato){
   this->enviar(id);
   this->enviar(dato);
 } 
 
-int Bluetooth::leerID(){
-  return this->leerNbytes(4);
+short Bluetooth::leerID(){
+  return this->leerNbytes(1);
 }
 
-int Bluetooth::leerCantidad(){
+long Bluetooth::leerCantidad(){
   return this->leerNbytes(4);
 }
 
 int Bluetooth::leerCantDatos(){
-  return this->leerNbytes(4);
+  return this->leerNbytes(2);
 }
 
 int Bluetooth::leerAccion(){

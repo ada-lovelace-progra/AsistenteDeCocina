@@ -1,12 +1,7 @@
 #include <EEPROMAda.h>
-#include <bluetooth.h>
-#include <EEPROM.h> 
-
-EEPROMAda::EEPROMAda(){}
-
-EEPROMAda::EEPROMAda(int a){
-  Serial.print("Construyendo EEPROMAda");
-    Serial.println();
+#include <EEPROM.h>
+void EEPROMAda::begin(){
+  Serial.println("Construyendo EEPROMAda");
 }
 
 void EEPROMAda::escribirID_DIS(char * nombre) {
@@ -21,7 +16,7 @@ char* EEPROMAda::leerID_DISP() {
   if(idDisp)
     return idDisp;
 
-  char nombre[999];
+  char* nombre = (char *)malloc(99);
   int index = 0;
 
   char c = 0;

@@ -11,8 +11,7 @@
 
 class Balanza{
 public:
-	Balanza();
-	Balanza(int data, int sck);
+	void begin(int data, int sck);
 	double leerBalanza();
 	double leerPesoBalanza();
 	double setPesoADepositar(double c);

@@ -10,18 +10,17 @@
 
 class Motor{
 public:
-	Motor();
-	Motor(int pinMT1, int pinMV1, int pinMT2, int pinMV2);
+	void begin(int sf1, int sf2, int sfP);
 	float operator=(float mode);
-	void Motor::horario(float mode);
-	void Motor::antihorario(float mode);
-	void Motor::parar();
 
 private:
-	int pinMT1;
-	int pinMV1;
-	int pinMT2;
-	int pinMV2;
+	void horario(float mode);
+	void antihorario(float mode);
+	void parar();
+
+	int pinSF1;
+	int pinSF2;
+	int pinSFP;
 };
  
 #endif

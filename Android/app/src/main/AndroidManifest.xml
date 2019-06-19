@@ -23,7 +23,7 @@
         <activity android:name=".BluetoothMenu" />
         <activity android:name=".BluetoothBusqueda" />
         <activity android:name=".BluetoothConectar" />
-        <activity android:name=".Recetas" />
+        <activity android:name=".Menu_Recetas" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

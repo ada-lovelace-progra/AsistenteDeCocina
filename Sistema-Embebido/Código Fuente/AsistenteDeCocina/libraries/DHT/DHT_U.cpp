@@ -21,8 +21,8 @@
 // SOFTWARE.
 #include "DHT_U.h"
 
-DHT_Unified::DHT_Unified(uint8_t pin, uint8_t type, uint8_t count, int32_t tempSensorId, int32_t humiditySensorId):
-  _dht(pin, type, count),
+DHT_Unified::DHT_Unified(uint8_t pin, uint8_t type, int32_t tempSensorId, int32_t humiditySensorId):
+  _dht(pin, type),
   _type(type),
   _temp(this, tempSensorId),
   _humidity(this, humiditySensorId)

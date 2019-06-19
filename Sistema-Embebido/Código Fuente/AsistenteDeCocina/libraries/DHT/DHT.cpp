@@ -7,9 +7,9 @@ written by Adafruit Industries
 #include "DHT.h"
 
 #define MIN_INTERVAL 2000
-#define TIMEOUT -1
+#define TIMEOUT UINT32_MAX
 
-DHT::DHT(uint8_t pin, uint8_t type, uint8_t count) {
+DHT::DHT(uint8_t pin, uint8_t type) {
   _pin = pin;
   _type = type;
   #ifdef __AVR
