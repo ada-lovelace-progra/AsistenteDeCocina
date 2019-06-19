@@ -212,8 +212,12 @@ public class ServicioBluetooth extends Service {
             try {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) {
-                Log.d("ServicioBluetooth", "excepción en escritura del hilo secundario: " + e.getMessage());
-                sendBroadcast(new Intent("Error al escribir bluetooth"));
+                Log.d("ServicioBluetooth",
+                        "excepción en escritura del hilo secundario: " + e.getMessage());
+
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
+                sendBroadcast(i);
             }
         }
 
@@ -228,8 +232,12 @@ public class ServicioBluetooth extends Service {
             try {
                 mmOutStream.write(byteBuffer);
             } catch (IOException e) {
-                Log.d("ServicioBluetooth", "excepción en escritura del hilo secundario: " + e.getMessage());
-                sendBroadcast(new Intent("Error al escribir bluetooth"));
+                Log.d("ServicioBluetooth",
+                        "excepción en escritura del hilo secundario: " + e.getMessage());
+
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
+                sendBroadcast(i);
             }
         }
 
@@ -238,7 +246,7 @@ public class ServicioBluetooth extends Service {
             try {
                 btSocket.close();
             } catch (IOException e) {
-                Log.e("PrinterService", "close() of connect socket failed", e);
+                Log.e("ServicioBluetooth", "No se pudo cerrar el socket al desconectar.", e);
             }
         }
     }
