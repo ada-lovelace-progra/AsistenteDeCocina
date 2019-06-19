@@ -3,18 +3,14 @@ package com.example.appsistentedecocina;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.bluetooth.BluetoothAdapter;
@@ -22,10 +18,8 @@ import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,15 +51,15 @@ public class BluetoothBusqueda extends NGActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth);
+        setContentView(R.layout.activity_bluetooth_busqueda);
 
-        switchBluetooth = (Switch)findViewById(R.id.switchBluetooth);
-        buttonActualizar = (Button)findViewById(R.id.buttonActualizar);
+        switchBluetooth = findViewById(R.id.switchBluetooth);
+        buttonActualizar = findViewById(R.id.buttonActualizar);
 
         /* Listeners */
-        switchBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                switchToggle(isChecked);
+        switchBluetooth.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                switchToggle(switchBluetooth.isChecked());
             }
         });
 
@@ -84,7 +78,7 @@ public class BluetoothBusqueda extends NGActivity {
         //defino los componentes de layout
         listaDispositivosView = (ListView) findViewById(R.id.listaDispositivosView);
 
-        //defino un adaptador para el ListView donde se van mostrar en la activity los dispositovs encontrados
+        //defino un adaptador para el ListView donde se van mostrar en la activity los dispositivos encontrados
         deviceListAdapter = new DeviceListAdapter(this);
 
         adaptadorBluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -214,9 +208,9 @@ public class BluetoothBusqueda extends NGActivity {
                             BluetoothAdapter.ERROR);
 
                     if (state == BluetoothAdapter.STATE_ON) {
-                        switchBluetooth.setEnabled(true);
-                    } else {
-                        switchBluetooth.setEnabled(false);
+                        switchBluetooth.setChecked(true);
+                    } else if (state == BluetoothAdapter.STATE_OFF) {
+                        switchBluetooth.setChecked(false);
                     }
                     break;
 
@@ -237,7 +231,8 @@ public class BluetoothBusqueda extends NGActivity {
                     BluetoothDevice device =
                             (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     listaDispositivos.add(device);
-                    mostrarToast("Dispositivo Encontrado: " + device.getName());
+                    String nombre = device.getName() != null ? device.getName() : "Dispositivo desconocido";
+                    mostrarToast("Dispositivo Encontrado: " + nombre);
                     break;
 
                 case BluetoothDevice.ACTION_BOND_STATE_CHANGED:

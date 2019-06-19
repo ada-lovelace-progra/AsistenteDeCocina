@@ -17,7 +17,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.082" />
+        app:layout_constraintVertical_bias=".1" />
 
     <Button
         android:id="@+id/bt_ingrediente"
@@ -28,10 +28,10 @@
         android:text="  Ingredientes "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.232" />
+        app:layout_constraintVertical_bias=".25" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -55,10 +55,10 @@
         android:text="Recetas"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bt_ingrediente"
-        app:layout_constraintVertical_bias="0.088" />
+        app:layout_constraintVertical_bias=".1" />
 
     <Button
         android:id="@+id/bt_bluetooth"
@@ -68,9 +68,9 @@
         android:text="Bluetooth"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bt_recetas"
-        app:layout_constraintVertical_bias="0.116" />
+        app:layout_constraintVertical_bias=".1" />
 
 </android.support.constraint.ConstraintLayout>

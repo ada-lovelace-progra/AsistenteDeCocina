@@ -24,6 +24,11 @@ public class NGActivity extends AppCompatActivity {
         Log.d("NGActivity", "onCreate()");
 
         super.onCreate(savedInstanceState);
+
+        if (ServicioBluetooth.isStarted == false) {
+            iniciarServicioBluetooth();
+        }
+        vincularServicioBluetooth();
     }
 
     @Override
@@ -55,6 +60,7 @@ public class NGActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d("NGActivity", "onDestroy()");
 
+        unbindService(sbtServiceConnection);
         super.onDestroy();
     }
 
@@ -79,16 +85,6 @@ public class NGActivity extends AppCompatActivity {
 
         registerReceiver(sbtReceiver, intentFilter);
 
-        /*new CountDownTimer(5000, 1000) {
-            public void onFinish() {
-                Log.d("NGActivity", "test");
-                escribirBluetooth("asd");
-            }
-
-            public void onTick(long millisUntilFinished) {
-                // millisUntilFinished    The amount of time until finished.
-            }
-        }.start();*/
         super.onResume();
     }
 

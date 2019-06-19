@@ -2,6 +2,8 @@ package com.example.appsistentedecocina;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,7 +23,7 @@ public class MainActivity extends NGActivity {
             @Override
             public void onClick( View view){
                 Intent intent;
-                intent=new Intent(MainActivity.this, List_Ingrediente.class);
+                intent = new Intent(MainActivity.this, List_Ingrediente.class);
                 startActivity(intent);
             }
         });
@@ -31,7 +33,7 @@ public class MainActivity extends NGActivity {
             @Override
             public void onClick( View view){
                 Intent intent;
-                intent=new Intent(MainActivity.this,Recetas.class);
+                intent = new Intent(MainActivity.this,Recetas.class);
                 startActivity(intent);
             }
         });
@@ -41,7 +43,7 @@ public class MainActivity extends NGActivity {
             @Override
             public void onClick( View view){
                 Intent intent;
-                intent=new Intent(MainActivity.this, BluetoothBusqueda.class);
+                intent = new Intent(MainActivity.this, BluetoothMenu.class);
                 startActivity(intent);
             }
         });

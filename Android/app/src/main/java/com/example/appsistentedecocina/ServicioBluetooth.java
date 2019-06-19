@@ -16,6 +16,8 @@ import java.util.UUID;
 
 public class ServicioBluetooth extends Service {
 
+    public static boolean isStarted = false;
+
     /* Constantes utilizadas para comunicación Bluetooth */
     public static final String ACTION_ERROR = "ACTION_ERROR";
 
@@ -47,6 +49,7 @@ public class ServicioBluetooth extends Service {
         Log.d("ServicioBluetooth", "servicio iniciando...");
         //obtengo el adaptador del bluetooth
         btAdapter = BluetoothAdapter.getDefaultAdapter();
+        isStarted = true;
 
         Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
 
@@ -65,7 +68,7 @@ public class ServicioBluetooth extends Service {
     }
 
     public void escribir(String s) {
-        if(connectedThread != null) {
+        if (connectedThread != null) {
             connectedThread.write(s);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + s);
         } else {
@@ -75,35 +78,74 @@ public class ServicioBluetooth extends Service {
         }
     }
 
+    public void escribir(int num) {
+        if(connectedThread != null) {
+            connectedThread.write(num);
+            Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + num);
+        } else {
+            Intent i = new Intent(ACTION_ERROR);
+            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
+            sendBroadcast(i);
+        }
+    }
+
     public void conectar (String btAddress) {
         if (btAdapter != null) {
-            //se realiza la conexion del Bluetooth crea y se conectandose a a traves de un socket
+            /* Se realiza la conexion del Bluetooth crea y se conectandose a a traves de un socket */
             BluetoothDevice device = btAdapter.getRemoteDevice(btAddress);
 
+            /* Primero desconecto si existe alguna conexión */
+            desconectar();
+
+            /* Intento crear socket */
             try {
                 btSocket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
             } catch (IOException e) {
-                sendBroadcast(new Intent("Error creación socket"));
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error",
+                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
+                sendBroadcast(i);
+
                 Log.d("ServicioBluetooth", "Error creación socket: " + e.getMessage());
+                return;
             }
 
+            /* Intento establecer conexión */
             try {
                 btSocket.connect();
             } catch (IOException e) {
+                /* Aviso que no se pudo conectar */
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error",
+                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
+                sendBroadcast(i);
+                Log.d("ServicioBluetooth", "Error conexión socket: " + e.getMessage());
+
+                /* Intento cerrar el socket */
                 try {
                     btSocket.close();
                 } catch (IOException e2) {
-                    sendBroadcast(new Intent("Error conexión socket"));
-                    Log.d("ServicioBluetooth", "Error conexión socket: " + e.getMessage());
+                    /* Ni me gasto en avisar nada, si llegamos acá estamos hasta las manos */
+                    Log.d("ServicioBluetooth", "Error al cerrar socket: " + e.getMessage());
                 }
+
+                return;
             }
 
+            /* Si llegamos acá es porque la conexión se pudo establecer */
             connectedThread = new ConnectedThread(btSocket);
             connectedThread.start();
 
-            //I send a character when resuming.beginning transmission to check device is connected
-            //If it is not an exception will be thrown in the write method and finish() will be called
+            /* Se envia el carácter que inicializa el embebido */
             connectedThread.write("]");
+        }
+    }
+
+    private void desconectar() {
+        /* Cancelo el thread actual (si existe) */
+        if (connectedThread != null) {
+            connectedThread.cancel();
+            connectedThread = null;
         }
     }
 
@@ -123,6 +165,7 @@ public class ServicioBluetooth extends Service {
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
                 Log.d("ServicioBluetooth", "fallo al crear hilo sencundario..." + e.getMessage());
+
             }
 
             mmInStream = tmpIn;
@@ -162,15 +205,40 @@ public class ServicioBluetooth extends Service {
             }
         }
 
-        //write method
+        /* Método para escribir un mensaje al dispositivo Bluetooth */
         public void write(String input) {
-            byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
+            byte[] msgBuffer = input.getBytes();
 
             try {
-                mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
+                mmOutStream.write(msgBuffer);
             } catch (IOException e) {
                 Log.d("ServicioBluetooth", "excepción en escritura del hilo secundario: " + e.getMessage());
                 sendBroadcast(new Intent("Error al escribir bluetooth"));
+            }
+        }
+
+        public void write(int num) {
+            byte[] byteBuffer = new byte[4];
+
+            byteBuffer[0] = (byte) (num >> 24);
+            byteBuffer[1] = (byte) (num >> 16);
+            byteBuffer[2] = (byte) (num >> 8);
+            byteBuffer[3] = (byte) (num /*>> 0*/);
+
+            try {
+                mmOutStream.write(byteBuffer);
+            } catch (IOException e) {
+                Log.d("ServicioBluetooth", "excepción en escritura del hilo secundario: " + e.getMessage());
+                sendBroadcast(new Intent("Error al escribir bluetooth"));
+            }
+        }
+
+        public void cancel() {
+            /* Intento cerrar el socket */
+            try {
+                btSocket.close();
+            } catch (IOException e) {
+                Log.e("PrinterService", "close() of connect socket failed", e);
             }
         }
     }
