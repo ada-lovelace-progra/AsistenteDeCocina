@@ -12,6 +12,7 @@ public class MainActivity extends NGActivity {
     private Button btnIng;
     private Button btnRec;
     private Button btnBt;
+    private Button btnS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,16 @@ public class MainActivity extends NGActivity {
             public void onClick( View view){
                 Intent intent;
                 intent = new Intent(MainActivity.this, BluetoothMenu.class);
+                startActivity(intent);
+            }
+        });
+
+        btnS = (Button) findViewById(R.id.bt_sensores);
+        btnS.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view){
+                Intent intent;
+                intent = new Intent(MainActivity.this, Sensores.class);
                 startActivity(intent);
             }
         });
