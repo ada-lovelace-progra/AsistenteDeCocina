@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Sensores"></activity>
         <activity
             android:name=".List_Ingrediente"
             android:label="@string/title_activity_list__ingrediente"
@@ -32,8 +33,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.appsistentedecocina.ServicioBluetooth">
-        </service>
+        <service android:name=".ServicioBluetooth"></service>
     </application>
 
 </manifest>

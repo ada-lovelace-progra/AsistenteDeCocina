@@ -73,4 +73,17 @@
         app:layout_constraintTop_toBottomOf="@+id/bt_recetas"
         app:layout_constraintVertical_bias=".1" />
 
+    <Button
+        android:id="@+id/bt_sensores"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roundedbtn"
+        android:text="Control Manual"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_bluetooth"
+        app:layout_constraintVertical_bias=".1" />
+
 </android.support.constraint.ConstraintLayout>
