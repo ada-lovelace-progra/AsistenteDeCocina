@@ -53,7 +53,6 @@ public class BluetoothConectar extends NGActivity {
         listaDispositivosView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mostrarToast("Posición: " + i);
                 conectarDispositivoBluetooth(listaDirecciones.get(i));
             }
         });

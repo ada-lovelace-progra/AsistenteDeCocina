@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,10 +21,9 @@ public class NGActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("NGActivity", "onCreate()");
-
         super.onCreate(savedInstanceState);
 
-        if (ServicioBluetooth.isStarted == false) {
+        if (!ServicioBluetooth.IS_STARTED) {
             iniciarServicioBluetooth();
         }
         vincularServicioBluetooth();

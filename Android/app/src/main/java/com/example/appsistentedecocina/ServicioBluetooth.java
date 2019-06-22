@@ -16,16 +16,21 @@ import java.util.UUID;
 
 public class ServicioBluetooth extends Service {
 
-    public static boolean isStarted = false;
+    // variable global para ver si el servicio está iniciado
+    public static boolean IS_STARTED = false;
 
     /* Constantes utilizadas para comunicación Bluetooth */
     public static final String ACTION_ERROR = "ACTION_ERROR";
+    public static final char CHAR_INICIALIZACION = ']';
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private ConnectedThread connectedThread;
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private LocalBinder binder = new LocalBinder();
+
+    // thread utilizado para pruebas
+    private PThread testThread;
 
     @Override
     public void onCreate() {
@@ -46,23 +51,15 @@ public class ServicioBluetooth extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        IS_STARTED = true;
         Log.d("ServicioBluetooth", "servicio iniciando...");
         //obtengo el adaptador del bluetooth
         btAdapter = BluetoothAdapter.getDefaultAdapter();
-        isStarted = true;
 
         Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
 
-        /*new CountDownTimer(5000, 1000) {
-            public void onFinish() {
-                Log.d("ServicioBluetooth", "Hola enviado.");
-                sendBroadcast(new Intent("Hola"));
-            }
-
-            public void onTick(long millisUntilFinished) {
-                // millisUntilFinished    The amount of time until finished.
-            }
-        }.start();*/
+        testThread = new PThread();
+        //testThread.start();
 
         return START_STICKY;
     }
@@ -97,51 +94,14 @@ public class ServicioBluetooth extends Service {
             /* Primero desconecto si existe alguna conexión */
             desconectar();
 
-            /* Intento crear socket */
-            try {
-                btSocket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
-            } catch (IOException e) {
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error",
-                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
-                sendBroadcast(i);
-
-                Log.d("ServicioBluetooth", "Error creación socket: " + e.getMessage());
-                return;
-            }
-
-            /* Intento establecer conexión */
-            try {
-                btSocket.connect();
-            } catch (IOException e) {
-                /* Aviso que no se pudo conectar */
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error",
-                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
-                sendBroadcast(i);
-                Log.d("ServicioBluetooth", "Error conexión socket: " + e.getMessage());
-
-                /* Intento cerrar el socket */
-                try {
-                    btSocket.close();
-                } catch (IOException e2) {
-                    /* Ni me gasto en avisar nada, si llegamos acá estamos hasta las manos */
-                    Log.d("ServicioBluetooth", "Error al cerrar socket: " + e.getMessage());
-                }
-
-                return;
-            }
-
-            /* Si llegamos acá es porque la conexión se pudo establecer */
-            connectedThread = new ConnectedThread(btSocket);
-            connectedThread.start();
-
-            /* Se envia el carácter que inicializa el embebido */
-            connectedThread.write("]");
+            /* Invoco a un SocketThread para la creación del socket Bluetooth,
+               esto es porque tal proceso puede llegar a bloquear al thread
+               principal si se intenta conectar a un dispositivo no válido. */
+            new SocketThread(device).start();
         }
     }
 
-    private void desconectar() {
+    synchronized private void desconectar() {
         /* Cancelo el thread actual (si existe) */
         if (connectedThread != null) {
             connectedThread.cancel();
@@ -175,6 +135,7 @@ public class ServicioBluetooth extends Service {
 
         //metodo run del hilo, que va a entrar en una espera activa para recibir los msjs del HC05
         public void run() {
+            long millis = System.currentTimeMillis();
             Log.d("ServicioBluetooth", "hilo secundario en ejecución.");
             byte[] buffer = new byte[1024];
             String stringBuffer = new String();
@@ -248,6 +209,83 @@ public class ServicioBluetooth extends Service {
             } catch (IOException e) {
                 Log.e("ServicioBluetooth", "No se pudo cerrar el socket al desconectar.", e);
             }
+        }
+    }
+
+    class PThread extends Thread {
+        long millis;
+
+        PThread() {
+            millis = System.currentTimeMillis();
+        }
+
+        public void run() {
+
+            while (true) {
+                if (System.currentTimeMillis() - millis > 5000) {
+                    Log.d("ServicioBluetooth", "hola enviado.");
+
+                    Intent i = new Intent(ACTION_ERROR);
+                    i.putExtra("Error", "Hola.");
+                    sendBroadcast(i);
+
+                    millis = System.currentTimeMillis();
+                }
+            }
+        }
+    }
+
+    class SocketThread extends Thread {
+        BluetoothDevice device;
+
+        SocketThread(BluetoothDevice device) {
+            this.device = device;
+        }
+
+        public void run() {
+            /* Intento crear socket */
+            try {
+                btSocket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+            } catch (IOException e) {
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error",
+                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
+                sendBroadcast(i);
+
+                Log.d("ServicioBluetooth", "Error creación socket: " + e.getMessage());
+                return;
+            }
+
+            /* Intento establecer conexión */
+            try {
+                btSocket.connect();
+            } catch (IOException e) {
+                /* Aviso que no se pudo conectar */
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error",
+                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
+                sendBroadcast(i);
+                Log.d("ServicioBluetooth", "Error conexión socket: " + e.getMessage());
+
+                /* Intento cerrar el socket */
+                try {
+                    btSocket.close();
+                } catch (IOException e2) {
+                    /* Ni me gasto en avisar nada, si llegamos acá estamos hasta las manos */
+                    Log.d("ServicioBluetooth", "Error al cerrar socket: " + e.getMessage());
+                }
+
+                return;
+            }
+
+            /* Si llegamos acá es porque la conexión se pudo establecer */
+            connectedThread = new ConnectedThread(btSocket);
+            connectedThread.start();
+
+            /* Se envia el carácter que inicializa el embebido */
+            connectedThread.write(CHAR_INICIALIZACION);
+
+            return;
         }
     }
 }

@@ -47,8 +47,5 @@ public class MainActivity extends NGActivity {
                 startActivity(intent);
             }
         });
-
-        iniciarServicioBluetooth();
-        vincularServicioBluetooth();
     }
 }
