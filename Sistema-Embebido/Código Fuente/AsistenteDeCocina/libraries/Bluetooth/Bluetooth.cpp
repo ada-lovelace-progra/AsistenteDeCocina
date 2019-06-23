@@ -105,10 +105,6 @@ int Bluetooth::leerCantDatos(){
   return this->leerNbytes(2);
 }
 
-int Bluetooth::leerAccion(){
-  int acc = this->leer();
-  if(acc==LEER_UNICO_PROD||acc==LEER_MULTI_PROD)
-    return acc;
-  else
-    return INACTIVO;
+int Bluetooth::leerEstado(){
+    return leer();
 }

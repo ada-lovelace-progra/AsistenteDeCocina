@@ -7,7 +7,7 @@
 #endif
 
 /////// constantes que se repiten en java al igual que los leds
-	 // constantes accion
+	 // constantes estado
 #define INACTIVO            -1
 #define LEER_UNICO_PROD		 1
 #define LEER_MULTI_PROD		 2
@@ -25,7 +25,11 @@
 #define BT_CONECTADO        93 //5D
 #define BT_DESCONECTADO     94 //5E
 
+	// constantes interrupcion
+#define FRENAR_SINFIN	   126
+
 // definicione de TIMEOUTS
+#define TIMEOUT_CUMPLIDO			  999
 #define TIMEOUTLEER_UNICO_PROD  	10000
 #define TIMEOUTLEER_MULTI_PROD  	10000
 #define TIMEOUTESPERAR_PRODUCTO 	60000
@@ -36,36 +40,39 @@
 #define TEMPERATURA			96
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
+#define NO_INTERRUPT	  -101
 
 /////// PIN DEBUG 				
-#define debugOut             2
-#define debugIn              3
+#define debugOut            32
+#define debugIn             33
 
 /////// Sensores
 #define tem_hum             28
-#define presencia           25	
-#define btPairing           31	//falta
+#define presencia           46	
 #define btTx				14  
 #define btRx				15	
 #define balDt	            38  
 #define balSck	            39 	
+///////	referencia de balanza
+//		E+				Rojo 	Marron
+//		E-				Negro	Azul
+//		A-				Blanco 	Blanco-Azul
+//		A+				Verde 	Verde
 
 /////// Actuadores
-#define SF1					40
-#define SF2					41
-#define SFP					44
-
-/////// Actuadores-Alertas      
-#define ledEncendido        13 //rojo 
-#define ledConectadoBT      12 //azul
-#define ledSirviendo        11 //amarillo
-#define ledDisponible       10 //verde
-#define ledCantNoDisponible  9 //blanco
+#define SF1					 2
+#define SF2					 3
+#define SFP				 	 4
+	// Alertas      
+#define ledEncendido        13 //Rojo 
+#define ledConectadoBT      12 //Azul
+#define ledSirviendo        11 //Amarillo
+#define ledDisponible       10 //Verde
+#define ledCantNoDisponible  9 //Blanco
 #define zumbador             8
 
 /////// Definiciones
 #define OFF					 0
-#define alimentacionBT      23
 #define tiempoZumbador     150
 #define zumbadorTime       150
 #define FRECUENCIA		   329

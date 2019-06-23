@@ -11,13 +11,17 @@
 class Motor{
 public:
 	void begin(int sf1, int sf2, int sfP);
+	float setVelocidad(float velocidad);
 	float operator=(float mode);
+	float operator--(int);
+	float operator++(int);
 
 private:
 	void horario(float mode);
 	void antihorario(float mode);
 	void parar();
 
+	float velocidad;
 	int pinSF1;
 	int pinSF2;
 	int pinSFP;

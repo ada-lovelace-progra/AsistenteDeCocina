@@ -13,7 +13,7 @@ public:
   void begin(int tX, int rX);
   char leerBlock();
   char leer();
-  int leerAccion();
+  int leerEstado();
   char* leerString(char* c);
   bool isConected();
   long leerNbytes(int c);

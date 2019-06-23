@@ -17,7 +17,7 @@ bool Balanza::isPesoAlcanzado(){
 	if (pesoRequerido == 0)
 		pesoRequerido = pesoADepositar - pesoBalanza;
 
-	return pesoRequerido < pesoBalanza;
+	return pesoRequerido > pesoBalanza;
 }
 
 double Balanza::setPesoADepositar(double p){
