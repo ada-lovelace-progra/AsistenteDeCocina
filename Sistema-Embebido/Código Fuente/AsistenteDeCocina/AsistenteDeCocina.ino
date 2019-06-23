@@ -1,10 +1,10 @@
+#include <Constantes.h>
 #include <EEPROMAda.h>
 #include <Led.h>
-#include <Constantes.h>
 #include <Bluetooth.h>
 #include <Balanza.h>
-#include <HumedadTemperatura.h>
 #include <Motor.h>
+#include <HumedadTemperatura.h>
 
 // objetos para controlar los modulos conectados
 Bluetooth bt;
