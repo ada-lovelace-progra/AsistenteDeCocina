@@ -19,6 +19,7 @@
 #define SUBIR_BRAZO			 8
 #define ESPERAR_NO_PRODUCTO  9
 #define CANT_NO_DISP		10 //A
+#define DEVOLVER_PROD 		11 //B
 #define SETEAR_IDDISP       90 //5A
 #define ENVIAR_IDDISP       91 //5B
 #define VALIDAR_HUMEDAD     92 //5C
@@ -41,6 +42,7 @@
 #define MAX_ARRAY_SIZE	   100
 #define UNAVAILABLE		  -100
 #define NO_INTERRUPT	  -101
+#define TIME_DEVOLVER_PROD 10000 
 
 /////// PIN DEBUG 				
 #define debugOut            32

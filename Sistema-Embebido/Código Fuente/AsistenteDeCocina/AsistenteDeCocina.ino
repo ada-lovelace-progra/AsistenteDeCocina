@@ -155,6 +155,12 @@ void estados() {
     if (bal.isPesoAlcanzado()) {
       Serial.println((String)"Se alcanzo el peso: " + cantidad[cantDatos] + " en balanza:" + bal.leerPesoBalanza());
       sinFin = OFF;
+      accion = DEVOLVER_PROD;
+    }
+
+  } else if (accion == DEVOLVER_PROD) {
+    sinFin--;
+    if (millis() - timeFromLastAccion > TIME_DEVOLVER_PROD) {
       accion = SUBIR_BRAZO;
     }
 
