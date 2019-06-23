@@ -88,9 +88,10 @@ void loop() {
   } else
     ConectadoBT = (millis() % 450 > 200);
 
-  if (interrupt == NO_INTERRUPT)
+  if (interrupt == NO_INTERRUPT) {
     controlDeTimeout();
-  estados();
+    estados();
+  }
   alertas();
 }
 
