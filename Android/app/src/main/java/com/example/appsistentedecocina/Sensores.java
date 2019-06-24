@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 
 
-public class Sensores extends AppCompatActivity implements SensorEventListener {
+public class Sensores extends NGActivity implements SensorEventListener {
 
     private SensorManager mSensorManager;
 
@@ -136,10 +136,12 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
                     txt += "Luminosidad:\t";
 //                    txt += event.values[0] + " Lux \n";
 
-                    if (event.values[0] <= 5)
+                    if (event.values[0] <= 5) {
                         txt += "X (encender un led)";
-                    else
+                        encenderLed();
+                    } else {
                         txt += "\uD83D\uDCA1";
+                    }
 
                     tvLuz.setText(txt);
                     break;
@@ -157,6 +159,7 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
      * hace que el arduino gire
      */
     public void play(){
+        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN);
         playpause.setText("||️");
     }
 
@@ -165,6 +168,7 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
      * envia señal de pausa al Arduino
      */
     public void pausa(){
+        escribirBluetoothByte(ServicioBluetooth.DETENER_SINFIN);
         playpause.setText(">>");
     }
 
@@ -173,9 +177,13 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
      * @param i sentido (?
      */
     public void invertirSentido(int i){
-
+        escribirBluetoothByte(ServicioBluetooth.INVERTIR_SINFIN);
     }
 
-
-
+    /**
+     * le dice al arduino que prenda leds
+     */
+    public void encenderLed(){
+        escribirBluetoothByte(ServicioBluetooth.ENCENDER_LED);
+    }
 }
