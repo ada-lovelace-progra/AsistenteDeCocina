@@ -7,10 +7,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 
@@ -18,6 +17,8 @@ import java.text.DecimalFormat;
 public class Sensores extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager mSensorManager;
+
+    private Button playpause;
 
     private Sensor mProximity;
     private TextView tvProximity;
@@ -37,6 +38,15 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensores);
 
+        playpause = findViewById(R.id.pausa);
+        playpause.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick( View view){
+                        play();
+                    }
+                }
+        );
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -97,10 +107,14 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
 //                    txt += "y: " + event.values[1] + "\n";
 //                    txt += "z: " + event.values[2] + "\n";
 
-                    if (event.values[1] < 0)
+                    if (event.values[1] < 0){
                         txt += "▼▼▼";
-                    else
+                        invertirSentido( 0);
+                    }
+                    else{
                         txt += "▲▲▲";
+                        invertirSentido( 1 );
+                    }
 
                     tvGravity.setText(txt);
                     break;
@@ -109,8 +123,11 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
                     txt += "Proximidad:\t";
 //                    txt += event.values[0] + "\n";
 
-                    if (event.values[0] <= 4)
+                    if (event.values[0] <= 4){
                         txt += "Sinfin Pausado";
+                        pausa();
+                    }
+
 
                     tvProximity.setText(txt);
                     break;
@@ -135,4 +152,30 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+    /**
+     * hace que el arduino gire
+     */
+    public void play(){
+        playpause.setText("||️");
+    }
+
+
+    /**
+     * envia señal de pausa al Arduino
+     */
+    public void pausa(){
+        playpause.setText(">>");
+    }
+
+    /**
+     * le dice al arduino que vaya en diferente sentido
+     * @param i sentido (?
+     */
+    public void invertirSentido(int i){
+
+    }
+
+
+
 }

@@ -11,7 +11,15 @@
         android:id="@+id/titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sensores" />
+        android:textSize="20sp"
+        android:text="Control Manual del Tornillo" />
+
+    <Button
+        android:id="@+id/pausa"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roundedbtn"
+        android:text="girar" />
 
     <TextView
         android:id="@+id/proximidad"
