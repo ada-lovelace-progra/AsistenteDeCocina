@@ -2,6 +2,9 @@ package com.example.appsistentedecocina;
 
 import java.io.Serializable;
 
+/**
+ * cada ingrediente es un objeto de este tipo
+ */
 public class Ingrediente implements Serializable {
 
     public Ingrediente(String titulo, int cant) {
