@@ -39,9 +39,9 @@ public class ServicioBluetooth extends Service {
     public static final byte VALIDAR_HUMEDAD = 92; //5C
     public static final byte BT_CONECTADO = 93; //5D
     public static final byte BT_DESCONECTADO = 94; //5E
-    public static final byte GIRAR_SINFIN = 126;
-    public static final byte DETENER_SINFIN = 125;
-    public static final byte INVERTIR_SINFIN = 124;
+    public static final byte GIRAR_SINFIN_HORARIO = 126;
+    public static final byte GIRAR_SINFIN_ANTIHORARIO = 125;
+    public static final byte DETENER_SINFIN = 124;
     public static final byte ENCENDER_LED = 123;
 
     private BluetoothAdapter btAdapter = null;

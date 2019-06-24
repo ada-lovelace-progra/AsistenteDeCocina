@@ -1,6 +1,5 @@
 package com.example.appsistentedecocina;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -159,7 +158,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
      * hace que el arduino gire
      */
     public void play(){
-        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN);
+        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_HORARIO);
         playpause.setText("||️");
     }
 
@@ -177,7 +176,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
      * @param i sentido (?
      */
     public void invertirSentido(int i){
-        escribirBluetoothByte(ServicioBluetooth.INVERTIR_SINFIN);
+        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_ANTIHORARIO);
     }
 
     /**
