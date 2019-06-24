@@ -1,7 +1,6 @@
 package com.example.appsistentedecocina;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -87,13 +86,17 @@ public class Menu_Recetas extends NGActivity {
         Toast.makeText(this, "Enviando receta " + receta.getNombre() + " al dispositivo",
                 Toast.LENGTH_SHORT).show();
 
+        // envio byte de acción
+        escribirBluetoothByte(ServicioBluetooth.LEER_MULTI_PROD);
+        // envio 4 bytes con cantidad de productos
+        escribirBluetoothNum(receta.getIngredientes().size());
 
-        for (Ingrediente i:receta.getIngredientes()
-             ) {
-            //aca va el codigo magico que le manda al arduino las cosas
-            //por ahora es un toast
-            Toast.makeText(this, i.getTitulo() + "  " + i.getCant()+"gr",
-                    Toast.LENGTH_SHORT).show();
+        for (Ingrediente i : receta.getIngredientes()) {
+            // por cada ingrediente
+            // envio 1 byte de ID del producto
+            escribirBluetoothByte((byte)1); // ACÁ HAY QUE MANDAR EL ID
+            // envio 4 bytes con la cantidad
+            escribirBluetoothNum(i.getCant());
         }
     }
 

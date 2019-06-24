@@ -19,9 +19,26 @@ public class ServicioBluetooth extends Service {
     // variable global para ver si el servicio está iniciado
     public static boolean IS_STARTED = false;
 
-    /* Constantes utilizadas para comunicación Bluetooth */
+    /* Constantes de broadcast */
     public static final String ACTION_ERROR = "ACTION_ERROR";
-    public static final char CHAR_INICIALIZACION = ']';
+
+    /* Constantes utilizadas para comunicación Bluetooth */
+    public static final byte INACTIVO = -1;
+    public static final byte LEER_UNICO_PROD = 1;
+    public static final byte LEER_MULTI_PROD = 2;
+    public static final byte ESPERAR_PRODUCTO = 3;
+    public static final byte SENSAR_PESO = 4;
+    public static final byte BAJAR_BRAZO = 5;
+    public static final byte SENSAR_PESO_SINFIN = 6;
+    public static final byte EXTRAER_PRODUCTO = 7;
+    public static final byte SUBIR_BRAZO = 8;
+    public static final byte ESPERAR_NO_PRODUCTO = 9;
+    public static final byte CANT_NO_DISP = 10; //A
+    public static final byte SETEAR_IDDISP = 90; //5A
+    public static final byte ENVIAR_IDDISP = 91; //5B
+    public static final byte VALIDAR_HUMEDAD = 92; //5C
+    public static final byte BT_CONECTADO = 93; //5D
+    public static final byte BT_DESCONECTADO = 94; //5E
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -64,7 +81,7 @@ public class ServicioBluetooth extends Service {
         return START_STICKY;
     }
 
-    public void escribir(String s) {
+    public void escribir (String s) {
         if (connectedThread != null) {
             connectedThread.write(s);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + s);
@@ -75,10 +92,21 @@ public class ServicioBluetooth extends Service {
         }
     }
 
-    public void escribir(int num) {
+    public void escribirNum (Integer num) {
         if(connectedThread != null) {
-            connectedThread.write(num);
+            connectedThread.writeNum(num);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + num);
+        } else {
+            Intent i = new Intent(ACTION_ERROR);
+            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
+            sendBroadcast(i);
+        }
+    }
+
+    public void escribirByte (byte b) {
+        if(connectedThread != null) {
+            connectedThread.writeNum(b);
+            Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + b);
         } else {
             Intent i = new Intent(ACTION_ERROR);
             i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
@@ -167,7 +195,7 @@ public class ServicioBluetooth extends Service {
         }
 
         /* Método para escribir un mensaje al dispositivo Bluetooth */
-        public void write(String input) {
+        public void write (String input) {
             byte[] msgBuffer = input.getBytes();
 
             try {
@@ -182,7 +210,7 @@ public class ServicioBluetooth extends Service {
             }
         }
 
-        public void write(int num) {
+        public void writeNum (int num) {
             byte[] byteBuffer = new byte[4];
 
             byteBuffer[0] = (byte) (num >> 24);
@@ -195,6 +223,19 @@ public class ServicioBluetooth extends Service {
             } catch (IOException e) {
                 Log.d("ServicioBluetooth",
                         "excepción en escritura del hilo secundario: " + e.getMessage());
+
+                Intent i = new Intent(ACTION_ERROR);
+                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
+                sendBroadcast(i);
+            }
+        }
+
+        public void writeByte (byte b) {
+            try {
+                mmOutStream.write(b);
+            } catch (IOException e) {
+                Log.d("ServicioBluetooth",
+                        "excepciÃ³n en escritura del hilo secundario: " + e.getMessage());
 
                 Intent i = new Intent(ACTION_ERROR);
                 i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
@@ -283,7 +324,7 @@ public class ServicioBluetooth extends Service {
             connectedThread.start();
 
             /* Se envia el carácter que inicializa el embebido */
-            connectedThread.write(CHAR_INICIALIZACION);
+            connectedThread.writeByte(BT_CONECTADO);
 
             return;
         }
