@@ -32,7 +32,7 @@ public class Menu_Recetas extends NGActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recetas);
 
-        if(! list_exists(this))
+        //if(! list_exists(this))
         {
             create_list();
         }
@@ -98,6 +98,8 @@ public class Menu_Recetas extends NGActivity {
             // envio 4 bytes con la cantidad
             escribirBluetoothNum(i.getCant());
         }
+
+
     }
 
 
@@ -115,18 +117,18 @@ public class Menu_Recetas extends NGActivity {
         ObjectOutputStream oos  = null;
 
         ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
-        listaIngredientes.add(new Ingrediente("arroz", 90));
+        listaIngredientes.add(new Ingrediente("arroz", 90, 1));
         recetas.add(new Receta(1,listaIngredientes,"Arroz"));
 
-        listaIngredientes.add(new Ingrediente("porotos", 40));
+        listaIngredientes.add(new Ingrediente("porotos", 40, 2));
         recetas.add(new Receta(2,listaIngredientes,"Moros y Cristianos"));
 
         listaIngredientes.clear();
 
-        listaIngredientes.add(new Ingrediente("lentejas",50));
+        listaIngredientes.add(new Ingrediente("lentejas",50, 3));
         recetas.add(new Receta(3,listaIngredientes,"Lentejas solas"));
 
-        listaIngredientes.add(new Ingrediente("Arroz",90));
+        listaIngredientes.add(new Ingrediente("Arroz",90, 1));
         recetas.add(new Receta(4,listaIngredientes,"Arroz con Lentejas"));
 
         try {
