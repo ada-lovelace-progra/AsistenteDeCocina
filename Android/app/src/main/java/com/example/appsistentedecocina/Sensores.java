@@ -108,11 +108,10 @@ public class Sensores extends NGActivity implements SensorEventListener {
 
                     if (event.values[1] < 0){
                         txt += "▼▼▼";
-                        invertirSentido( 0);
+                        invertirSentido();
                     }
                     else{
                         txt += "▲▲▲";
-                        invertirSentido( 1 );
                     }
 
                     tvGravity.setText(txt);
@@ -173,9 +172,8 @@ public class Sensores extends NGActivity implements SensorEventListener {
 
     /**
      * le dice al arduino que vaya en diferente sentido
-     * @param i sentido (?
      */
-    public void invertirSentido(int i){
+    public void invertirSentido(){
         escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_ANTIHORARIO);
     }
 
