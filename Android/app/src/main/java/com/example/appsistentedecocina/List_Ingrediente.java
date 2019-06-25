@@ -117,7 +117,7 @@ public class List_Ingrediente extends NGActivity {
 
         listview = (ListView) findViewById(R.id.ingrediente_list);
 
-        //if (!list_exists(this))
+        if (!list_exists(this))
         {
             create_list();
         }

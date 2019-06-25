@@ -22,21 +22,20 @@ public class Menu_Recetas extends NGActivity {
     private Button btn2;
     private Button btn3;
     private Button btn4;
-    private Receta r1;
-    private Receta r2;
-    private Receta r3;
-    private Receta r4;
+    private ArrayList<Ingrediente> ingredientesActuales;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recetas);
 
-        //if(! list_exists(this))
+        if(! list_exists(this))
         {
             create_list();
         }
         open_list();
+        traerIngredientesActuales();
 
         //inicio los botones
         btn1 = (Button) findViewById(R.id.receta1);
@@ -86,6 +85,27 @@ public class Menu_Recetas extends NGActivity {
         Toast.makeText(this, "Enviando receta " + receta.getNombre() + " al dispositivo",
                 Toast.LENGTH_SHORT).show();
 
+        //chequeo que puedo hacer la receta
+        for( Ingrediente j : receta.getIngredientes())
+        {
+            boolean esta = false;
+            for(Ingrediente i : this.ingredientesActuales){
+                if( j.getId() == i.getId() )
+                {
+                    if(j.getCant() < i.getCant()){
+                        esta = true;
+                        i.setCant(i.getCant() - j.getCant() );
+                    }
+                }
+            }
+            if(!esta)
+            {
+                Toast.makeText(this, "No hay suficientes ingredientes disponibles",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         // envio byte de acción
         escribirBluetoothByte(ServicioBluetooth.LEER_MULTI_PROD);
         // envio 4 bytes con cantidad de productos
@@ -94,12 +114,12 @@ public class Menu_Recetas extends NGActivity {
         for (Ingrediente i : receta.getIngredientes()) {
             // por cada ingrediente
             // envio 1 byte de ID del producto
-            escribirBluetoothByte((byte)1); // ACÁ HAY QUE MANDAR EL ID
+            escribirBluetoothByte((byte)i.getId()); // ACÁ HAY QUE MANDAR EL ID
             // envio 4 bytes con la cantidad
             escribirBluetoothNum(i.getCant());
         }
 
-
+        actualizarIngredientes();
     }
 
 
@@ -183,6 +203,55 @@ public class Menu_Recetas extends NGActivity {
                 //if (keep == false) file.delete();
             }
             catch (Exception e) { /* do nothing */ }
+        }
+    }
+
+
+    private void traerIngredientesActuales(){
+        File directory = this.getFilesDir();
+        File file = new File(directory, "ingredientes");
+        FileInputStream fis = null;
+        ObjectInput ois = null;
+        //boolean            keep = true;
+
+
+        try {
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+            this.ingredientesActuales = (ArrayList<Ingrediente>) ois.readObject();
+        } catch (Exception e) {
+            //keep = false;
+            //Log.e("MyAppName", "failed to suspend", e);
+        } finally {
+            try {
+                if (ois != null) ois.close();
+                if (fis != null) fis.close();
+                //if (keep == false) file.delete();
+            } catch (Exception e) { /* do nothing */ }
+        }
+    }
+
+    private void actualizarIngredientes(){
+        File directory = this.getFilesDir();
+        File file = new File(directory, "ingredientes");
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+        //boolean            keep = true;
+
+
+        try {
+            fos = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(this.ingredientesActuales);
+        } catch (Exception e) {
+            //keep = false;
+            //Log.e("MyAppName", "failed to suspend", e);
+        } finally {
+            try {
+                if (oos != null) oos.close();
+                if (fos != null) fos.close();
+                //if (keep == false) file.delete();
+            } catch (Exception e) { /* do nothing */ }
         }
     }
 }
