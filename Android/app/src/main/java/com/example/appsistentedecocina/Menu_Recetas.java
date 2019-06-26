@@ -114,7 +114,7 @@ public class Menu_Recetas extends NGActivity {
         for (Ingrediente i : receta.getIngredientes()) {
             // por cada ingrediente
             // envio 1 byte de ID del producto
-            escribirBluetoothByte((byte)i.getId()); // ACÁ HAY QUE MANDAR EL ID
+            escribirBluetoothByte(i.getId()); // ACÁ HAY QUE MANDAR EL ID
             // envio 4 bytes con la cantidad
             escribirBluetoothNum(i.getCant());
         }
@@ -137,18 +137,18 @@ public class Menu_Recetas extends NGActivity {
         ObjectOutputStream oos  = null;
 
         ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
-        listaIngredientes.add(new Ingrediente("arroz", 90, 1));
+        listaIngredientes.add(new Ingrediente("arroz", 90, (byte)1));
         recetas.add(new Receta(1,listaIngredientes,"Arroz"));
 
-        listaIngredientes.add(new Ingrediente("porotos", 40, 2));
+        listaIngredientes.add(new Ingrediente("porotos", 40, (byte)2));
         recetas.add(new Receta(2,listaIngredientes,"Moros y Cristianos"));
 
         listaIngredientes.clear();
 
-        listaIngredientes.add(new Ingrediente("lentejas",50, 3));
+        listaIngredientes.add(new Ingrediente("lentejas",50, (byte)3));
         recetas.add(new Receta(3,listaIngredientes,"Lentejas solas"));
 
-        listaIngredientes.add(new Ingrediente("Arroz",90, 1));
+        listaIngredientes.add(new Ingrediente("Arroz",90, (byte)1));
         recetas.add(new Receta(4,listaIngredientes,"Arroz con Lentejas"));
 
         try {
