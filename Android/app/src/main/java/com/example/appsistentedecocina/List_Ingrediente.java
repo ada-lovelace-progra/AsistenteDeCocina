@@ -136,7 +136,7 @@ public class List_Ingrediente extends NGActivity {
             Toast.makeText(getApplicationContext(), "pusiste valores invalidos", Toast.LENGTH_SHORT).show();
             return;
         }
-        listaIngredientes.add(new Ingrediente(nuevo_ingrediente, nueva_cantidad, nuevo_id));
+        listaIngredientes.add(new Ingrediente(nuevo_ingrediente, nueva_cantidad, (byte)nuevo_id));
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
 
