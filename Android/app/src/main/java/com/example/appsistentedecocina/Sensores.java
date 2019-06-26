@@ -1,23 +1,23 @@
 package com.example.appsistentedecocina;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 
 
-public class Sensores extends AppCompatActivity implements SensorEventListener {
+public class Sensores extends NGActivity implements SensorEventListener {
 
     private SensorManager mSensorManager;
+
+    private Button playpause;
 
     private Sensor mProximity;
     private TextView tvProximity;
@@ -37,6 +37,15 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensores);
 
+        playpause = findViewById(R.id.pausa);
+        playpause.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick( View view){
+                        play();
+                    }
+                }
+        );
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
@@ -97,10 +106,13 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
 //                    txt += "y: " + event.values[1] + "\n";
 //                    txt += "z: " + event.values[2] + "\n";
 
-                    if (event.values[1] < 0)
+                    if (event.values[1] < 0){
                         txt += "▼▼▼";
-                    else
+                        invertirSentido();
+                    }
+                    else{
                         txt += "▲▲▲";
+                    }
 
                     tvGravity.setText(txt);
                     break;
@@ -109,8 +121,11 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
                     txt += "Proximidad:\t";
 //                    txt += event.values[0] + "\n";
 
-                    if (event.values[0] <= 4)
+                    if (event.values[0] <= 4){
                         txt += "Sinfin Pausado";
+                        pausa();
+                    }
+
 
                     tvProximity.setText(txt);
                     break;
@@ -119,10 +134,12 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
                     txt += "Luminosidad:\t";
 //                    txt += event.values[0] + " Lux \n";
 
-                    if (event.values[0] <= 5)
+                    if (event.values[0] <= 5) {
                         txt += "X (encender un led)";
-                    else
+                        encenderLed();
+                    } else {
                         txt += "\uD83D\uDCA1";
+                    }
 
                     tvLuz.setText(txt);
                     break;
@@ -134,5 +151,36 @@ public class Sensores extends AppCompatActivity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    /**
+     * hace que el arduino gire
+     */
+    public void play(){
+        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_HORARIO);
+        playpause.setText("||️");
+    }
+
+
+    /**
+     * envia señal de pausa al Arduino
+     */
+    public void pausa(){
+        escribirBluetoothByte(ServicioBluetooth.DETENER_SINFIN);
+        playpause.setText(">>");
+    }
+
+    /**
+     * le dice al arduino que vaya en diferente sentido
+     */
+    public void invertirSentido(){
+        escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_ANTIHORARIO);
+    }
+
+    /**
+     * le dice al arduino que prenda leds
+     */
+    public void encenderLed(){
+        escribirBluetoothByte(ServicioBluetooth.ENCENDER_LED);
     }
 }

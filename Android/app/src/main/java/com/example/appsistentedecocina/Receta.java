@@ -2,13 +2,24 @@ package com.example.appsistentedecocina;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Esta clase va a ser util, les juro
  */
 public class Receta implements Serializable {
     private int id;
+
     private ArrayList<Ingrediente> ingredientes = new ArrayList<Ingrediente>();
+    private String nombre;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public int getId() {
         return id;
@@ -21,6 +32,13 @@ public class Receta implements Serializable {
     public Receta(int id, ArrayList<Ingrediente> ingredientes) {
         this.id = id;
         this.ingredientes = ingredientes;
+    }
+
+    public Receta(int id, ArrayList<Ingrediente> ingredientes, String nombre) {
+        this.id = id;
+        //Collections.copy(this.ingredientes, ingredientes);
+        this.ingredientes.addAll(ingredientes);
+        this.nombre = nombre;
     }
 
     public ArrayList<Ingrediente> getIngredientes() {

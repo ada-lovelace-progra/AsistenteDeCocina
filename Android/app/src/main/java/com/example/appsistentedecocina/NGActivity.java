@@ -105,6 +105,16 @@ public class NGActivity extends AppCompatActivity {
         sbtService.escribir(s);
     }
 
+    protected void escribirBluetoothNum(Integer num) {
+        Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + num.toString());
+        sbtService.escribirNum(num);
+    }
+
+    protected void escribirBluetoothByte (byte b) {
+        Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + b);
+        sbtService.escribirByte(b);
+    }
+
     protected void conectarDispositivoBluetooth (String address) {
         sbtService.conectar(address);
     }

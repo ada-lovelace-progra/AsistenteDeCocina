@@ -39,6 +39,7 @@ public class List_Ingrediente extends NGActivity {
     private ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
     private String nuevo_ingrediente = "";
     private int nueva_cantidad = 0;
+    private int nuevo_id = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,35 +58,49 @@ public class List_Ingrediente extends NGActivity {
 //                        .setAction("Action", null).show();
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Nuevo Ingrediente");
+
                 //contexto
                 LinearLayout layout = new LinearLayout(context);
                 layout.setOrientation(LinearLayout.VERTICAL);
+
                 // Set up the input
                 final TextView ingrediente = new TextView(context);
                 final EditText input = new EditText(context);
                 final TextView cantidad = new TextView(context);
                 final EditText input2 = new EditText(context);
+                final TextView id = new TextView(context);
+                final EditText input3 = new EditText(context);
+
                 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
                 ingrediente.setText(" ingrediente:");
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_TEXT);
                 cantidad.setText(" cantidad (gr):");
                 input2.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+                id.setText("id: ");
+                input3.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+
                 //lo meto en el layout este
                 layout.addView(ingrediente);
                 layout.addView(input);
                 layout.addView(cantidad);
                 layout.addView(input2);
+                layout.addView(id);
+                layout.addView(input3);
+
+
                 //lo seteo
                 builder.setView(layout);
+
+
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (! input.getText().toString().equals("") ){
+                        if (!input.getText().toString().equals("")) {
                             nuevo_ingrediente = input.getText().toString();
                             nueva_cantidad = Integer.parseInt(input2.getText().toString());
+                            nuevo_id = Integer.parseInt(input3.getText().toString());
                             add_ingrediente();
-
                         }
                     }
                 });
@@ -102,7 +117,7 @@ public class List_Ingrediente extends NGActivity {
 
         listview = (ListView) findViewById(R.id.ingrediente_list);
 
-        if(! list_exists(this))
+        if (!list_exists(this))
         {
             create_list();
         }
@@ -121,7 +136,7 @@ public class List_Ingrediente extends NGActivity {
             Toast.makeText(getApplicationContext(), "pusiste valores invalidos", Toast.LENGTH_SHORT).show();
             return;
         }
-        listaIngredientes.add(new Ingrediente(nuevo_ingrediente, nueva_cantidad));
+        listaIngredientes.add(new Ingrediente(nuevo_ingrediente, nueva_cantidad, nuevo_id));
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
 
@@ -137,12 +152,12 @@ public class List_Ingrediente extends NGActivity {
     }
 
 
-    private void create_list(){
+    private void create_list() {
         File file = new File(this.getFilesDir(), "ingredientes");
         file.setWritable(true);
         file.setReadable(true);
-        FileOutputStream   fos  = null;
-        ObjectOutputStream oos  = null;
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
         //listaIngredientes.add(new Ingrediente("arroz", 150));
         //listaIngredientes.add(new Ingrediente("yerba", 500));
 
@@ -159,11 +174,11 @@ public class List_Ingrediente extends NGActivity {
 
     }
 
-    private void save_list(){
+    private void save_list() {
         File directory = this.getFilesDir();
         File file = new File(directory, "ingredientes");
-        FileOutputStream   fos  = null;
-        ObjectOutputStream oos  = null;
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
         //boolean            keep = true;
 
 
@@ -171,27 +186,24 @@ public class List_Ingrediente extends NGActivity {
             fos = new FileOutputStream(file);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(this.listaIngredientes);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //keep = false;
             //Log.e("MyAppName", "failed to suspend", e);
-        }
-        finally {
+        } finally {
             try {
-                if (oos != null)   oos.close();
-                if (fos != null)   fos.close();
+                if (oos != null) oos.close();
+                if (fos != null) fos.close();
                 //if (keep == false) file.delete();
-            }
-            catch (Exception e) { /* do nothing */ }
+            } catch (Exception e) { /* do nothing */ }
         }
 
     }
 
-    private void open_list(){
+    private void open_list() {
         File directory = this.getFilesDir();
         File file = new File(directory, "ingredientes");
-        FileInputStream fis  = null;
-        ObjectInput ois  = null;
+        FileInputStream fis = null;
+        ObjectInput ois = null;
         //boolean            keep = true;
 
 
@@ -199,24 +211,21 @@ public class List_Ingrediente extends NGActivity {
             fis = new FileInputStream(file);
             ois = new ObjectInputStream(fis);
             this.listaIngredientes = (ArrayList<Ingrediente>) ois.readObject();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //keep = false;
             //Log.e("MyAppName", "failed to suspend", e);
-        }
-        finally {
+        } finally {
             try {
-                if (ois != null)   ois.close();
-                if (fis != null)   fis.close();
+                if (ois != null) ois.close();
+                if (fis != null) fis.close();
                 //if (keep == false) file.delete();
-            }
-            catch (Exception e) { /* do nothing */ }
+            } catch (Exception e) { /* do nothing */ }
         }
     }
 
     public boolean list_exists(Context context) {
         File file = context.getFileStreamPath("ingredientes");
-        if(file == null || !file.exists()) {
+        if (file == null || !file.exists()) {
             return false;
         }
         return true;
