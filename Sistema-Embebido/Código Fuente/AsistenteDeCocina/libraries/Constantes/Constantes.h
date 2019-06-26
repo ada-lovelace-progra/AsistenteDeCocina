@@ -27,10 +27,14 @@
 #define BT_DESCONECTADO     94 //5E
 
 	// constantes interrupcion
-#define FRENAR_SINFIN	   126
+#define GIRAR_SINFIN_HORARIO 	   126
+#define GIRAR_SINFIN_ANTIHORARIO   125
+#define ENCENDER_LED			   124
+#define DETENER_SINFIN			   123
 
 // definicione de TIMEOUTS
 #define TIMEOUT_CUMPLIDO			  999
+#define TIMEOUT_POR_DEFAULT			90000
 #define TIMEOUTLEER_UNICO_PROD  	10000
 #define TIMEOUTLEER_MULTI_PROD  	10000
 #define TIMEOUTESPERAR_PRODUCTO 	60000
@@ -45,11 +49,11 @@
 #define TIME_DEVOLVER_PROD 10000 
 
 /////// PIN DEBUG 				
-#define debugOut            32
-#define debugIn             33
+#define debugOut            22
+#define debugIn             23
 
 /////// Sensores
-#define tem_hum             28
+#define tem_hum             52
 #define presencia           46	
 #define btTx				14  
 #define btRx				15	
@@ -79,9 +83,9 @@
 #define zumbadorTime       150
 #define FRECUENCIA		   329
 #define fcorreccion			-1 //se debe medir la balanza con un peso conocido antes de setear el valor
-#define BT_IS_SET		  true
+#define BT_IS_SET		  false
 #define BTSERIAL	   Serial3
-#define BTNAME			"LaCocinaDeAda"
-#define PASSWORD	    "12345"
+#define BTNAME			"AppSistenteDeCocina"
+#define PASSWORD	    "ada"
 
 #endif

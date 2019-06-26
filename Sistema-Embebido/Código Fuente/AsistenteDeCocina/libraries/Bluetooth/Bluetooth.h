@@ -13,18 +13,17 @@ public:
   void begin(int tX, int rX);
   char leerBlock();
   char leer();
-  int leerEstado();
+  char leerEstado();
   char* leerString(char* c);
   bool isConected();
   long leerNbytes(int c);
   void enviar(String c);
   void enviar(const char* c);
   void enviar(int c);
-  void enviarl(long c);
   void enviar(short id, long dato);
-  long leerCantidad();
-  int leerCantDatos();
-  short leerID();
+  unsigned long leerCantidad();
+  unsigned long leerCantDatos();
+  long leerID();
 
 private:
   bool conected;
