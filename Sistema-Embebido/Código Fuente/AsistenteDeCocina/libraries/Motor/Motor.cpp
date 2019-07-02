@@ -28,9 +28,11 @@ float Motor::operator=(float mode){
 
 float Motor::setVelocidad(float mode){
 	this->velocidad=mode>1?1:mode;
-	if(mode<0)
+	this->velocidad=mode<-1?-1:mode;
+
+	if(mode>0.05)
 		horario(mode);
-	else if(mode>0)
+	else if(mode<-0.05)
 		antihorario(mode);
 	else 
 		parar();
@@ -47,7 +49,7 @@ void Motor::horario(float mode){
 void Motor::antihorario(float mode){
 	digitalWrite(this->pinSF1,LOW);
 	digitalWrite(this->pinSF2,HIGH); 
-	analogWrite(this->pinSFP,mode*-254); 
+	analogWrite(this->pinSFP,mode*(-254)); 
 }
 
 void Motor::parar(){

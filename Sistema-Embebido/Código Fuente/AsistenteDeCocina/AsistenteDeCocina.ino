@@ -48,8 +48,7 @@ char lastAccion2 = accion - 1;
 
 void setup() {
   Serial.begin(9600);
-  if (isInDebug())
-    Serial.println("arranca");
+  serialD("arranca");
 
   pinMode(presencia           , INPUT);
   // Actuadores
@@ -78,10 +77,9 @@ void setup() {
 
 void loop() {
   debugLoop();
-
   if (bt.isConected()) {
     int temp = bt.leerEstado();
-    if (isAccion(temp))
+    if (isAccion(temp) && accion == INACTIVO)
       accion = temp;
     else if (isInterrupt(temp)) {
       interrupt = temp;
@@ -104,8 +102,6 @@ void loop() {
 void estados() {
   if (accion == INACTIVO || accion == UNAVAILABLE) {
     debug();
-    if (accion != INACTIVO)
-      Serial.println((String)"Accion Seteada con '" + accion + "'");
 
   } else if (accion == LEER_UNICO_PROD) {
     debug();
@@ -117,19 +113,21 @@ void estados() {
 
   } else if (accion == LEER_MULTI_PROD) {
     debug();
-    unsigned long temp = cantDatos = bt.leerCantDatos();
-    cantDatos--;
-    while (--temp) {
+    unsigned long temp = -1;
+    unsigned long cantDatos = bt.leerCantDatos();
+    serialD("ccantidad seteada con " + (unsigned long)cantDatos);
+    while (cantDatos - ++temp) {
+      serialD("ENTRO WHILE MULTIPROD");
       idProducto[temp] = bt.leerID();
       cantidad[temp] = bt.leerCantidad();
-      Serial.println((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp]);
+      serialD((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp] + "faltan " + (cantDatos - temp) + " productos");
     }
     accion = ESPERAR_NO_PRODUCTO;
 
   } else if (accion == ESPERAR_PRODUCTO) {
     debug();
     if (digitalRead(presencia)) {
-      Serial.println("boton presionado");
+      serialD("boton presionado");
       //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
       accion = SENSAR_PESO;
     }
@@ -156,10 +154,10 @@ void estados() {
 
   } else if (accion == EXTRAER_PRODUCTO) {
     debug();
-    sinFin++;
+    sinFin = 1;
 
     if (bal.isPesoAlcanzado()) {
-      Serial.println((String)"Se alcanzo el peso: " + cantidad[cantDatos] + " en balanza:" + bal.leerPesoBalanza());
+      serialD((String)"Se alcanzo el peso: " + cantidad[cantDatos] + " en balanza:" + bal.leerPesoBalanza());
       sinFin = OFF;
       accion = DEVOLVER_PROD;
     }
@@ -179,21 +177,17 @@ void estados() {
   } else if (accion == ESPERAR_NO_PRODUCTO) {
     debug();
     if (!digitalRead(presencia)) {
-      Serial.println("boton NO Presionado");
-      if (cantDatos--) {
-        accion = ESPERAR_PRODUCTO;
-      }
-      else {
-        accion = INACTIVO;
-      }
+      serialD("boton NO Presionado");
+      accion = ESPERAR_PRODUCTO;
     }
 
   } else if (accion == CANT_NO_DISP) {
     debug();
+    serialD((String)"Cantidad no disponible con " + cantidad[0] + "gramos pedidos y " + bal.leerBalanza() + "gramos en balanza");
     CantNoDisponible = HIGH;
     char idprod = idProducto[cantDatos];
     bt.enviar(CANT_NO_DISP, idprod);
-    delay(2000);
+    delay(1000);
     CantNoDisponible = LOW;
     accion = INACTIVO;
 
@@ -210,7 +204,7 @@ void estados() {
     accion = INACTIVO;
 
   } else {
-    Serial.println("entro por default");
+    serialD("entro por default");
     accion = INACTIVO;
   }
 }
@@ -280,8 +274,8 @@ void interrupciones() {
       else
         sinFin = OFF;
     } else if (interrupt == DETENER_SINFIN) {
-        sinFin = OFF;
-        vecesEnInterrupcion = 0;
+      sinFin = OFF;
+      vecesEnInterrupcion = 0;
     } else
       serialD("Entro por default con interrupcionid: " + interrupt);
   }
@@ -339,11 +333,12 @@ bool isInDebug() {
   return digitalRead(debugIn);
 }
 
-unsigned long debugLoopTimes = 25000;
+double vecesporloop = 10000;
+unsigned long debugLoopTimes = vecesporloop;
 void debugLoop() {
   if (isInDebug() && !debugLoopTimes--) {
-    debugLoopTimes = 25000;
-    Serial.println((String)"Tiempo entre loops: " + (debugTime = millis() - debugTime) / 25000.0 + " con accion: " + accion + " e interrupccion: " + interrupt);
+    debugLoopTimes = vecesporloop;
+    Serial.println((String)"Tiempo entre loops: " + (debugTime = millis() - debugTime) / vecesporloop + "ms con accion: " + accion + " e interrupccion: " + interrupt + " con cantDatos: " + cantDatos + " peso en balanza: " + bal.leerBalanza());
   }
 }
 

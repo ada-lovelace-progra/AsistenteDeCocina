@@ -9,7 +9,8 @@ void Balanza::begin(int data, int sck){
 
 double Balanza::leerBalanza(){
 //	double p = b.is_ready() ? (b.get_value(5)*1000)+1000 : -1;
-	return 0-b.get_value();//p > 0 ? p : 0;
+	double r =  b.get_units(2)/100;//p > 0 ? p : 0;
+	return r;
 }
 
 bool Balanza::isPesoAlcanzado(){

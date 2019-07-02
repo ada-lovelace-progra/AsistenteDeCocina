@@ -49,16 +49,16 @@
 #define TIME_DEVOLVER_PROD 10000 
 
 /////// PIN DEBUG 				
-#define debugOut            22
-#define debugIn             23
+#define debugOut            24
+#define debugIn             25
 
 /////// Sensores
-#define tem_hum             52
+#define tem_hum             52 
 #define presencia           46	
 #define btTx				14  
 #define btRx				15	
-#define balDt	            38  
-#define balSck	            39 	
+#define balDt	            A0  
+#define balSck	            A1 	
 ///////	referencia de balanza
 //		E+				Rojo 	Marron
 //		E-				Negro	Azul
@@ -82,7 +82,7 @@
 #define tiempoZumbador     150
 #define zumbadorTime       150
 #define FRECUENCIA		   329
-#define fcorreccion			-1 //se debe medir la balanza con un peso conocido antes de setear el valor
+#define fcorreccion	 	 	-1 //se debe medir la balanza con un peso conocido antes de setear el valor
 #define BT_IS_SET		  false
 #define BTSERIAL	   Serial3
 #define BTNAME			"AppSistenteDeCocina"
