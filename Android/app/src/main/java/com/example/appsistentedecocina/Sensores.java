@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -156,7 +157,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
     /**
      * hace que el arduino gire
      */
-    public void play(){
+    public void play() {
         escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_HORARIO);
         playpause.setText("||️");
     }
@@ -165,7 +166,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
     /**
      * envia señal de pausa al Arduino
      */
-    public void pausa(){
+    public void pausa() {
         escribirBluetoothByte(ServicioBluetooth.DETENER_SINFIN);
         playpause.setText(">>");
     }
@@ -173,14 +174,16 @@ public class Sensores extends NGActivity implements SensorEventListener {
     /**
      * le dice al arduino que vaya en diferente sentido
      */
-    public void invertirSentido(){
+    public void invertirSentido() {
         escribirBluetoothByte(ServicioBluetooth.GIRAR_SINFIN_ANTIHORARIO);
     }
 
     /**
      * le dice al arduino que prenda leds
      */
-    public void encenderLed(){
+    public void encenderLed() {
+        Log.d("NGActivity", "Servicio: " + sbtService);
+        Log.d("NGActivity", "encender LED");
         escribirBluetoothByte(ServicioBluetooth.ENCENDER_LED);
     }
 }

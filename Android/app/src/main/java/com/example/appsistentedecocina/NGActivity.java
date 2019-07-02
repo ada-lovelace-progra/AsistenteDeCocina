@@ -20,32 +20,33 @@ public class NGActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("NGActivity", "onCreate()");
+        Log.d("NGActivity", "onCreate(): " + this.getClass().getSimpleName());
         super.onCreate(savedInstanceState);
 
         if (!ServicioBluetooth.IS_STARTED) {
             iniciarServicioBluetooth();
         }
+        Log.d("NGActivity", "Vinculando con servicio... : " + this.getClass().getSimpleName());
         vincularServicioBluetooth();
     }
 
     @Override
     protected void onStart() {
-        Log.d("NGActivity", "onStart()");
+        Log.d("NGActivity", "onStart(): " + this.getClass().getSimpleName());
 
         super.onStart();
     }
 
     @Override
     protected void onRestart() {
-        Log.d("NGActivity", "onRestart()");
+        Log.d("NGActivity", "onRestart(): " + this.getClass().getSimpleName());
 
         super.onRestart();
     }
 
     @Override
     protected void onPause() {
-        Log.d("NGActivity", "onPause()");
+        Log.d("NGActivity", "onPause(): " + this.getClass().getSimpleName());
 
         if (sbtReceiver != null) {
             unregisterReceiver(sbtReceiver);
@@ -56,7 +57,7 @@ public class NGActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d("NGActivity", "onDestroy()");
+        Log.d("NGActivity", "onDestroy(): " + this.getClass().getSimpleName());
 
         unbindService(sbtServiceConnection);
         super.onDestroy();
@@ -64,14 +65,14 @@ public class NGActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        Log.d("NGActivity", "onStop()");
+        Log.d("NGActivity", "onStop(): " + this.getClass().getSimpleName());
 
         super.onStop();
     }
 
     @Override
     protected void onResume() {
-        Log.d("NGActivity", "onResume()");
+        Log.d("NGActivity", "onResume(): " + this.getClass().getSimpleName());
 
         if (sbtReceiver == null) {
             sbtReceiver = new ServicioBluetoothReceiver();
@@ -101,18 +102,34 @@ public class NGActivity extends AppCompatActivity {
     }
 
     protected void escribirBluetooth (String s) {
-        Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + s);
-        sbtService.escribir(s);
+        if (sbtService != null) {
+            Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + s);
+            sbtService.escribir(s);
+        } else {
+            Log.d("NGActivity", "Se intentó enviar un mensaje Bluetooth cuando" +
+                    " el serviocio aún no estaba vinculado." + s);
+        }
+
     }
 
     protected void escribirBluetoothNum(Integer num) {
-        Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + num.toString());
-        sbtService.escribirNum(num);
+        if (sbtService != null) {
+            Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + num);
+            sbtService.escribirNum(num);
+        } else {
+            Log.d("NGActivity", "Se intentó enviar un mensaje Bluetooth cuando" +
+                    " el serviocio aún no estaba vinculado." + num);
+        }
     }
 
     protected void escribirBluetoothByte (byte b) {
-        Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + b);
-        sbtService.escribirByte(b);
+        if (sbtService != null) {
+            Log.d("NGActivity", "Enviando mensaje a Bluetooth: " + b);
+            sbtService.escribirByte(b);
+        } else {
+            Log.d("NGActivity", "Se intentó enviar un mensaje Bluetooth cuando" +
+                    " el serviocio aún no estaba vinculado." + b);
+        }
     }
 
     protected void conectarDispositivoBluetooth (String address) {
@@ -128,6 +145,7 @@ public class NGActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             ServicioBluetooth.LocalBinder myBinder = (ServicioBluetooth.LocalBinder) service;
+            Log.d("NGActivity", "Vinculado con servicio: " + this.getClass().getSimpleName());
             sbtService = myBinder.getService();
             sbtBound = true;
         }
