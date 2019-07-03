@@ -64,7 +64,7 @@ public class ServicioBluetooth extends Service {
     protected int colorEstado = Color.RED;
 
     // thread utilizado para pruebas
-    private PThread testThread;
+    //private PThread testThread;
 
     @Override
     public void onCreate() {
@@ -92,8 +92,8 @@ public class ServicioBluetooth extends Service {
 
         Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
 
-        testThread = new PThread();
-        //testThread.start();
+        /*testThread = new PThread();
+        testThread.start();*/
 
         /* Construimos el mapa de estados */
         mapaEstados.put((int)INACTIVO, "Inactivo");
@@ -197,39 +197,38 @@ public class ServicioBluetooth extends Service {
             String stringBuffer = new String();
             int bytes;
 
-            //el hilo secundario se queda esperando mensajes del HC05
+            //el hilo secundario se queda esperando mensajes del HC06
             while (true) {
                 try {
-                    //se leen los datos del Bluethoot
+                    //se leen los datos del Bluetooth
                     bytes = mmInStream.read(buffer);
                     String readMessage = new String(buffer, 0, bytes);
                     stringBuffer += readMessage;
                     int index = stringBuffer.indexOf("\n");
-                    Intent i;
 
                     if (index > 0) {
-                        //sendBroadcast(new Intent(readMessage));
                         String cadena = stringBuffer.substring(0, index);
                         Log.d("ServicioBluetooth", "Cadena: " + cadena);
                         stringBuffer = stringBuffer.substring(index);
 
                         String params[] = cadena.split(":");
-                        // el primer valor es la acción
-                        int accion = Integer.valueOf(params[0]);
-                        switch (accion) {
-                            case ACTION_ERROR:
-                                enviarError(params[1]);
-                                break;
-                            case ACTION_ESTADO:
-                                cambiarEstado(params[1]);
-                                break;
-                            case ACTION_NOTIFICACION:
-                                enviarNotificacion(params[1]);
-                                break;
-                            default:
-                                break;
+                        if (params.length == 2) {
+                            // el primer valor es la acción
+                            int accion = Integer.valueOf(params[0]);
+                            switch (accion) {
+                                case ACTION_ERROR:
+                                    enviarError(params[1]);
+                                    break;
+                                case ACTION_ESTADO:
+                                    cambiarEstado(params[1]);
+                                    break;
+                                case ACTION_NOTIFICACION:
+                                    enviarNotificacion(params[1]);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-
                     } else if (index == 0) {
                         stringBuffer = stringBuffer.substring(1);
                     }
@@ -324,7 +323,8 @@ public class ServicioBluetooth extends Service {
         sendBroadcast(i);
     }
 
-    class PThread extends Thread {
+    /* Utilizado para pruebas */
+    /*class PThread extends Thread {
         long millis;
 
         PThread() {
@@ -337,15 +337,13 @@ public class ServicioBluetooth extends Service {
                 if (System.currentTimeMillis() - millis > 5000) {
                     Log.d("ServicioBluetooth", "hola enviado.");
 
-                    textEstado = "FOCO";
-                    colorEstado = Color.BLUE;
-                    enviarEstado();
+                    cambiarEstado("92");
 
                     millis = System.currentTimeMillis();
                 }
             }
         }
-    }
+    }*/
 
     class SocketThread extends Thread {
         BluetoothDevice device;
