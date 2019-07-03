@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class ServicioBluetooth extends Service {
@@ -20,7 +23,9 @@ public class ServicioBluetooth extends Service {
     public static boolean IS_STARTED = false;
 
     /* Constantes de broadcast */
-    public static final String ACTION_ERROR = "ACTION_ERROR";
+    public static final int ACTION_ERROR = 100;
+    public static final int ACTION_ESTADO = 101;
+    public static final int ACTION_NOTIFICACION = 102;
 
     /* Constantes utilizadas para comunicación Bluetooth */
     public static final byte INACTIVO = -1;
@@ -39,16 +44,24 @@ public class ServicioBluetooth extends Service {
     public static final byte VALIDAR_HUMEDAD = 92; //5C
     public static final byte BT_CONECTADO = 93; //5D
     public static final byte BT_DESCONECTADO = 94; //5E
+
     public static final byte GIRAR_SINFIN_HORARIO = 126;
     public static final byte GIRAR_SINFIN_ANTIHORARIO = 125;
     public static final byte DETENER_SINFIN = 124;
     public static final byte ENCENDER_LED = 123;
+
+    /* Mapa de los estados con los mensajes a mostrar */
+    Map<Integer, String> mapaEstados = new HashMap<Integer, String>();
 
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private ConnectedThread connectedThread;
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private LocalBinder binder = new LocalBinder();
+
+    // Texto y color del estado actual del arduino
+    protected String textEstado = "Desconectado";
+    protected int colorEstado = Color.RED;
 
     // thread utilizado para pruebas
     private PThread testThread;
@@ -82,6 +95,23 @@ public class ServicioBluetooth extends Service {
         testThread = new PThread();
         //testThread.start();
 
+        /* Construimos el mapa de estados */
+        mapaEstados.put((int)INACTIVO, "Inactivo");
+        mapaEstados.put((int)LEER_UNICO_PROD, "Leyendo producto");
+        mapaEstados.put((int)LEER_MULTI_PROD, "Leyendo productos");
+        mapaEstados.put((int)ESPERAR_PRODUCTO, "Esperando recipiente");
+        mapaEstados.put((int)SENSAR_PESO, "Sensando peso");
+        mapaEstados.put((int)BAJAR_BRAZO, "Bajando brazo");
+        mapaEstados.put((int)SENSAR_PESO_SINFIN, "Sensando peso sinfin");
+        mapaEstados.put((int)EXTRAER_PRODUCTO, "Extrayendo produtco");
+        mapaEstados.put((int)SUBIR_BRAZO, "Subiendo brazo");
+        mapaEstados.put((int)ESPERAR_NO_PRODUCTO, "Esperando");
+        mapaEstados.put((int)CANT_NO_DISP, "Producto insuficiente");
+        mapaEstados.put((int)SETEAR_IDDISP, "S_IDDISP");
+        mapaEstados.put((int)ENVIAR_IDDISP, "E_IDDISP");
+        mapaEstados.put((int)VALIDAR_HUMEDAD, "Validando humedad");
+        mapaEstados.put((int)BT_CONECTADO, "Conectado");
+        mapaEstados.put((int)BT_DESCONECTADO, "Desconectado");
         return START_STICKY;
     }
 
@@ -90,9 +120,7 @@ public class ServicioBluetooth extends Service {
             connectedThread.write(s);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + s);
         } else {
-            Intent i = new Intent(ACTION_ERROR);
-            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
-            sendBroadcast(i);
+            enviarError("No hay conexión establecida con dispositivo Bluetooth.");
         }
     }
 
@@ -101,9 +129,7 @@ public class ServicioBluetooth extends Service {
             connectedThread.writeNum(num);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + num);
         } else {
-            Intent i = new Intent(ACTION_ERROR);
-            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
-            sendBroadcast(i);
+            enviarError("No hay conexión establecida con dispositivo Bluetooth.");
         }
     }
 
@@ -112,9 +138,7 @@ public class ServicioBluetooth extends Service {
             connectedThread.writeNum(b);
             Log.d("ServicioBluetooth", "Mensaje enviado a Bluetooth: " + b);
         } else {
-            Intent i = new Intent(ACTION_ERROR);
-            i.putExtra("Error", "No hay conexión establecida con dispositivo Bluetooth.");
-            sendBroadcast(i);
+            enviarError("No hay conexión establecida con dispositivo Bluetooth.");
         }
     }
 
@@ -181,13 +205,37 @@ public class ServicioBluetooth extends Service {
                     String readMessage = new String(buffer, 0, bytes);
                     stringBuffer += readMessage;
                     int index = stringBuffer.indexOf("\n");
+                    Intent i;
 
                     if (index > 0) {
-                        //se muestran en el layout de la activity, utilizando el handler del hilo
-                        // principal antes mencionado
                         //sendBroadcast(new Intent(readMessage));
-                        Log.d("ServicioBluetooth", "Cadena: " + stringBuffer.substring(0, index));
+                        String cadena = stringBuffer.substring(0, index);
+                        Log.d("ServicioBluetooth", "Cadena: " + cadena);
                         stringBuffer = stringBuffer.substring(index);
+
+                        String params[] = cadena.split(":");
+                        // el primer valor es la acción
+                        int accion = Integer.valueOf(params[0]);
+                        switch (accion) {
+                            case ACTION_ERROR:
+                                enviarError(params[1]);
+                                i = new Intent(String.valueOf(ACTION_ERROR));
+                                i.putExtra("Error", params[2]);
+                                sendBroadcast(i);
+                                break;
+                            case ACTION_ESTADO:
+                                cambiarEstado(params[1]);
+                                break;
+                            case ACTION_NOTIFICACION:
+                                enviarNotificacion(params[1]);
+                                i = new Intent(String.valueOf(ACTION_ERROR));
+                                i.putExtra("Notificacion", params[2]);
+                                sendBroadcast(i);
+                                break;
+                            default:
+                                break;
+                        }
+
                     } else if (index == 0) {
                         stringBuffer = stringBuffer.substring(1);
                     }
@@ -208,9 +256,7 @@ public class ServicioBluetooth extends Service {
                 Log.d("ServicioBluetooth",
                         "excepción en escritura del hilo secundario: " + e.getMessage());
 
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
-                sendBroadcast(i);
+                enviarError("No se pudo enviar mensaje al dispositivo Bluetooth.");
             }
         }
 
@@ -228,9 +274,7 @@ public class ServicioBluetooth extends Service {
                 Log.d("ServicioBluetooth",
                         "excepción en escritura del hilo secundario: " + e.getMessage());
 
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
-                sendBroadcast(i);
+                enviarError("No se pudo enviar mensaje al dispositivo Bluetooth.");
             }
         }
 
@@ -239,11 +283,9 @@ public class ServicioBluetooth extends Service {
                 mmOutStream.write(b);
             } catch (IOException e) {
                 Log.d("ServicioBluetooth",
-                        "excepciÃ³n en escritura del hilo secundario: " + e.getMessage());
+                        "excepciónn en escritura del hilo secundario: " + e.getMessage());
 
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error", "No se pudo enviar mensaje al dispositivo Bluetooth.");
-                sendBroadcast(i);
+                enviarError("No se pudo enviar mensaje al dispositivo Bluetooth.");
             }
         }
 
@@ -255,6 +297,36 @@ public class ServicioBluetooth extends Service {
                 Log.e("ServicioBluetooth", "No se pudo cerrar el socket al desconectar.", e);
             }
         }
+    }
+
+    private void enviarError(String param) {
+        Intent i = new Intent(String.valueOf(ACTION_ERROR));
+        i.putExtra("Error", param);
+        sendBroadcast(i);
+    }
+
+    private void enviarNotificacion(String param) {
+        Intent i = new Intent(String.valueOf(ACTION_NOTIFICACION));
+        i.putExtra("Notificacion", param);
+        sendBroadcast(i);
+    }
+
+    private void cambiarEstado(String param) {
+        int estado = Integer.valueOf(param);
+        textEstado = mapaEstados.get(estado);
+        if (estado == (int)BT_DESCONECTADO) {
+            colorEstado = Color.RED;
+        } else {
+            colorEstado = Color.YELLOW;
+        }
+    }
+
+    public void enviarEstado () {
+        Intent i = new Intent(String.valueOf(ACTION_ESTADO));
+        Log.d("ServicioBluetooth", String.valueOf(ACTION_ESTADO));
+        i.putExtra("Estado", textEstado);
+        i.putExtra("Color", colorEstado);
+        sendBroadcast(i);
     }
 
     class PThread extends Thread {
@@ -270,9 +342,9 @@ public class ServicioBluetooth extends Service {
                 if (System.currentTimeMillis() - millis > 5000) {
                     Log.d("ServicioBluetooth", "hola enviado.");
 
-                    Intent i = new Intent(ACTION_ERROR);
-                    i.putExtra("Error", "Hola.");
-                    sendBroadcast(i);
+                    textEstado = "FOCO";
+                    colorEstado = Color.BLUE;
+                    enviarEstado();
 
                     millis = System.currentTimeMillis();
                 }
@@ -292,10 +364,7 @@ public class ServicioBluetooth extends Service {
             try {
                 btSocket = device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
             } catch (IOException e) {
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error",
-                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
-                sendBroadcast(i);
+                enviarError("No se pudo establecer la conexión con el dispositivo Bluetooth.");
 
                 Log.d("ServicioBluetooth", "Error creación socket: " + e.getMessage());
                 return;
@@ -306,10 +375,7 @@ public class ServicioBluetooth extends Service {
                 btSocket.connect();
             } catch (IOException e) {
                 /* Aviso que no se pudo conectar */
-                Intent i = new Intent(ACTION_ERROR);
-                i.putExtra("Error",
-                        "No se pudo establecer la conexión con el dispositivo Bluetooth.");
-                sendBroadcast(i);
+                enviarError("No se pudo establecer la conexión con el dispositivo Bluetooth.");
                 Log.d("ServicioBluetooth", "Error conexión socket: " + e.getMessage());
 
                 /* Intento cerrar el socket */

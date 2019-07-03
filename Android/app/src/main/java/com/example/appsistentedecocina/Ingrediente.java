@@ -9,10 +9,10 @@ public class Ingrediente implements Serializable {
 
     private String titulo;
     private int cant;
-    private byte id;
+    private int id;
 
 
-    public Ingrediente(String titulo, int cant, byte id) {
+    public Ingrediente(String titulo, int cant, int id) {
         this.titulo = titulo;
         this.cant = cant;
         this.id = id;
@@ -34,7 +34,7 @@ public class Ingrediente implements Serializable {
         this.cant = cant;
     }
 
-    public byte getId() {
+    public int getId() {
         return id;
     }
 
