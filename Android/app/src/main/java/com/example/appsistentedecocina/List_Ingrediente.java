@@ -144,6 +144,9 @@ public class List_Ingrediente extends NGActivity {
         nueva_cantidad = 0;
     }
 
+    /**
+     * es necesario refrescar la lista on resume (para cuando cambia el layout y toda la joda)
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -223,6 +226,11 @@ public class List_Ingrediente extends NGActivity {
         }
     }
 
+    /**
+     * devuelve true si existe un archivo con ingredientes
+     * @param context contexto
+     * @return true si existe, false si no existe
+     */
     public boolean list_exists(Context context) {
         File file = context.getFileStreamPath("ingredientes");
         if (file == null || !file.exists()) {

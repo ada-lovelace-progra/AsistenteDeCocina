@@ -206,7 +206,9 @@ public class Menu_Recetas extends NGActivity {
         }
     }
 
-
+    /**
+     * trae la lista de ingredientes, utilizado para verificar si las cantidades son suficientes
+     */
     private void traerIngredientesActuales(){
         File directory = this.getFilesDir();
         File file = new File(directory, "ingredientes");
@@ -231,6 +233,9 @@ public class Menu_Recetas extends NGActivity {
         }
     }
 
+    /**
+     * guarda los ingredientes en su estado modificado (con los ingredientes restados)
+     */
     private void actualizarIngredientes(){
         File directory = this.getFilesDir();
         File file = new File(directory, "ingredientes");
