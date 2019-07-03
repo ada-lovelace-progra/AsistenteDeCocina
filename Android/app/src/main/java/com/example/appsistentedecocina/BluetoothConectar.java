@@ -37,6 +37,7 @@ public class BluetoothConectar extends NGActivity {
                 if (adaptadorBluetooth.isEnabled()) {
 
                     listaDirecciones = new ArrayList<String>();
+                    adapter.clear();
                     for(BluetoothDevice bt : adaptadorBluetooth.getBondedDevices()) {
                         String s = bt.getName();
                         listaDirecciones.add(bt.getAddress());

@@ -1,49 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tableLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_weight="1">
 
-        <Button
-            android:id="@+id/receta1"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="Receta 1" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/receta2"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="Receta 2" />
-    </TableRow>
+            <Button
+                android:id="@+id/receta3"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:text="Receta 3" />
 
-    <TableRow
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+            <Button
+                android:id="@+id/receta2"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:text="Receta 2" />
 
-        <Button
-            android:id="@+id/receta3"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="Receta 3"/>
+            <Button
+                android:id="@+id/receta1"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:text="Receta 1" />
 
-        <Button
-            android:id="@+id/receta4"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="Receta 4"/>
-    </TableRow>
+            <Button
+                android:id="@+id/receta4"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:text="Receta 4" />
+        </LinearLayout>
+    </ScrollView>
 
-</TableLayout>
+</LinearLayout>

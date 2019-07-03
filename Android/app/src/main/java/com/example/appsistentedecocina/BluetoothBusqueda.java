@@ -217,6 +217,7 @@ public class BluetoothBusqueda extends NGActivity {
                 case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                     /* Inicio de búsqueda de dispositivos Bluetooth */
                     listaDispositivos = new ArrayList<BluetoothDevice>();
+
                     progressDialog.show();
                     break;
 
@@ -267,6 +268,7 @@ public class BluetoothBusqueda extends NGActivity {
     };
 
     private void mostrarListaDispositivos() {
+        deviceListAdapter = new DeviceListAdapter(this);
         deviceListAdapter.setData(listaDispositivos);
         deviceListAdapter.setListener(listenerBotonEmparejar);
         listaDispositivosView.setAdapter(deviceListAdapter);
