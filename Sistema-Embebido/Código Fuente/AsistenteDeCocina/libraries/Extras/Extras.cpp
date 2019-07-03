@@ -175,7 +175,7 @@ void Extras::exec(){
   }
   delay(notelength); // necessary because pinBuzzer is on independent timer
   noTone(pinBuzzer);
-  digitalWrite(led, LOW);
+  digitalWrite(led=((led+1)%5)+9 , LOW);
   delay(notelength * beatseparationconstant); // create separation between notes
   if (a == 7) { // loop back around to beginning of song
     a = 1;

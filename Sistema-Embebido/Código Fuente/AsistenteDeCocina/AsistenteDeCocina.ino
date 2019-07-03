@@ -28,9 +28,14 @@ char* id_dispositivo;
 int accion = INACTIVO;
 long idProducto[MAX_ARRAY_SIZE];
 unsigned long cantidad[MAX_ARRAY_SIZE];
-unsigned long cantDatos = 0;
+long cantDatos = 0;
+
+// variables para comunicacion con android
 bool alertaHumedad = false;
 bool alertaTemperatura = false;
+int errorCode = NO_ERROR;
+int notifCode = NO_NOTIF;
+char lastAccion = accion - 1;
 
 // varibles de timeout
 int lastAccionForTimeout = accion - 1;
@@ -43,7 +48,6 @@ unsigned long timeFromLastInterrupt = 0;
 
 // variables para debug
 unsigned long debugTime = 0;
-char lastAccion = accion - 1;
 char lastAccion2 = accion - 1;
 
 void setup() {
@@ -53,6 +57,10 @@ void setup() {
   pinMode(presencia           , INPUT);
   // Actuadores
   pinMode(zumbador            , OUTPUT);
+
+
+  pinMode(debugOut, OUTPUT);
+  pinMode(debugIn, INPUT);
 
   digitalWrite(debugOut, HIGH);
 
@@ -79,8 +87,10 @@ void loop() {
   debugLoop();
   if (bt.isConected()) {
     int temp = bt.leerEstado();
-    if (isAccion(temp) && accion == INACTIVO)
+    if (isAccion(temp) && accion == INACTIVO) {
       accion = temp;
+      bt.enviarAccion(accion);
+    }
     else if (isInterrupt(temp)) {
       interrupt = temp;
       timeFromLastInterrupt = millis() - timeFromLastInterrupt;
@@ -108,7 +118,7 @@ void estados() {
     cantDatos = 1;
     idProducto[0] = bt.leerID();
     cantidad[0] = bt.leerCantidad();
-    accion = ESPERAR_NO_PRODUCTO;
+    accion = ESPERAR_PRODUCTO;
     debug((String)"Id recibido: " + idProducto[0] + " con un peso de " + cantidad[0]);
 
   } else if (accion == LEER_MULTI_PROD) {
@@ -120,14 +130,14 @@ void estados() {
       serialD("ENTRO WHILE MULTIPROD");
       idProducto[temp] = bt.leerID();
       cantidad[temp] = bt.leerCantidad();
-      serialD((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp] + "faltan " + (cantDatos - temp) + " productos");
+      serialD((String)"Id recibido: " + idProducto[temp] + " con un peso de " + cantidad[temp] + " faltan " + (cantDatos - temp) + " productos");
     }
-    accion = ESPERAR_NO_PRODUCTO;
-
+    accion = ESPERAR_PRODUCTO;
+    cantDatos--;
   } else if (accion == ESPERAR_PRODUCTO) {
     debug();
-    if (digitalRead(presencia)) {
-      serialD("boton presionado");
+    if (bal.isProducto()) {
+      serialD("hay algo en la balanza");
       //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
       accion = SENSAR_PESO;
     }
@@ -145,7 +155,7 @@ void estados() {
     debug();
     //quedan pendientes por falta de tiempo y financiamiento
     delay(600);
-    accion = EXTRAER_PRODUCTO;
+    accion = SENSAR_PESO_SINFIN;
 
   } else if (accion == SENSAR_PESO_SINFIN) {
     debug();
@@ -153,17 +163,23 @@ void estados() {
     accion = EXTRAER_PRODUCTO;
 
   } else if (accion == EXTRAER_PRODUCTO) {
-    debug();
-    sinFin = 1;
+    if (digitalRead(presencia)) {
+      sinFin = 0;
+      errorCode = ERROR_NO_TACHO;
+      serialD("NO tacho");
+    } else {
 
-    if (bal.isPesoAlcanzado()) {
-      serialD((String)"Se alcanzo el peso: " + cantidad[cantDatos] + " en balanza:" + bal.leerPesoBalanza());
-      sinFin = OFF;
-      accion = DEVOLVER_PROD;
+      debug();
+      sinFin = 1;
+      
+      if (bal.isPesoAlcanzado()) {
+        serialD((String)"Se alcanzo el peso: " + cantidad[cantDatos] + " en balanza:" + bal.leerPesoBalanza());
+        sinFin = OFF;
+        accion = DEVOLVER_PROD;
+      }
     }
-
   } else if (accion == DEVOLVER_PROD) {
-    sinFin--;
+    sinFin = -1;
     if (millis() - timeFromLastAccion > TIME_DEVOLVER_PROD) {
       accion = SUBIR_BRAZO;
     }
@@ -176,10 +192,13 @@ void estados() {
 
   } else if (accion == ESPERAR_NO_PRODUCTO) {
     debug();
-    if (!digitalRead(presencia)) {
-      serialD("boton NO Presionado");
-      accion = ESPERAR_PRODUCTO;
+    if (!bal.isProducto()) {
+      serialD("sacaron el prod de la balanza");
     }
+    if (--cantDatos >= 0) {
+      accion = ESPERAR_PRODUCTO;
+    } else
+      accion = INACTIVO;
 
   } else if (accion == CANT_NO_DISP) {
     debug();
@@ -190,6 +209,7 @@ void estados() {
     delay(1000);
     CantNoDisponible = LOW;
     accion = INACTIVO;
+    errorCode = CANT_NO_DISP;
 
   } else if (accion == SETEAR_IDDISP) {
     debug();
@@ -256,20 +276,23 @@ void interrupciones() {
     return;
   else {
     if (!vecesEnInterrupcion)
-      vecesEnInterrupcion = 28;
+      vecesEnInterrupcion = 1000;
 
     if (!--vecesEnInterrupcion)
       interrupt = NO_INTERRUPT;
 
+    serialD((String)"entra en interrupccion: " + interrupt + " falta " + vecesEnInterrupcion + " ciclos");
     if (interrupt == ENCENDER_LED) {
+      if (vecesEnInterrupcion > 30)
+        vecesEnInterrupcion = 29;
       extras.exec();
     } else if (interrupt == GIRAR_SINFIN_HORARIO) {
-      if (vecesEnInterrupcion == 1)
+      if (vecesEnInterrupcion >= 1)
         sinFin++;
       else
         sinFin = OFF;
     } else if (interrupt == GIRAR_SINFIN_ANTIHORARIO) {
-      if (vecesEnInterrupcion == 1)
+      if (vecesEnInterrupcion >= 1)
         sinFin--;
       else
         sinFin = OFF;
@@ -298,6 +321,17 @@ void alertasBT() {
   if (alertaTemperatura) {
     bt.enviar(TEMPERATURA, ht.leerTemperatura());
     alertaTemperatura = false;
+  }
+  bt.enviarAccion(accion);
+
+  if (errorCode != NO_ERROR) {
+    bt.enviarError(errorCode);
+    errorCode = NO_ERROR;
+  }
+
+  if (notifCode != NO_NOTIF) {
+    bt.enviarNotif(notifCode);
+    notifCode = NO_NOTIF;
   }
 }
 
@@ -357,7 +391,7 @@ void debug(String c) {
 
 void serialD(String c) {
   if (isInDebug())
-    Serial.println((String) c);
+    Serial.println(c);
 }
 
 void debug() {

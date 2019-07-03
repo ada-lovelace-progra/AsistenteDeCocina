@@ -17,6 +17,8 @@ public:
 	double setPesoADepositar(double c);
 	bool isPesoAlcanzado();
 	void leerPesoADepositar();
+	bool isProducto();
+
 	double pesoRequerido;
 	double pesoADepositar;
 	double pesoBalanza;

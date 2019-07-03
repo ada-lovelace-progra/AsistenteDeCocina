@@ -32,13 +32,32 @@
 #define ENCENDER_LED			   124
 #define DETENER_SINFIN			   123
 
-// definicione de TIMEOUTS
+	// constantes error
+#define NO_ERROR			-1
+#define ERROR_CANT 			 0
+#define ERROR_TIME			 1
+#define ERROR_NO_TACHO		 2
+
+	// constantes error
+#define MAX_TEMP			40
+#define MAX_HUM				60
+
+#define NO_NOTIF			-1
+#define NOTIF_CANT 			 0
+#define NOTIF_TIME			 1
+
+	// definicione de TIMEOUTS
 #define TIMEOUT_CUMPLIDO			  999
 #define TIMEOUT_POR_DEFAULT			90000
 #define TIMEOUTLEER_UNICO_PROD  	10000
 #define TIMEOUTLEER_MULTI_PROD  	10000
 #define TIMEOUTESPERAR_PRODUCTO 	60000
 #define TIMEOUTESPERAR_NO_PRODUCTO 	60000
+	
+	// constantes envio data
+#define ACTION_ERROR		100
+#define ACTION_ESTADO		101
+#define ACTION_NOTIF		102
 
 	 // constantes 
 #define HUMEDAD 			95
@@ -83,9 +102,9 @@
 #define zumbadorTime       150
 #define FRECUENCIA		   329
 #define fcorreccion	 	 	-1 //se debe medir la balanza con un peso conocido antes de setear el valor
-#define BT_IS_SET		  false
+#define BT_IS_SET		  true
 #define BTSERIAL	   Serial3
 #define BTNAME			"AppSistenteDeCocina"
-#define PASSWORD	    "ada"
+#define PASSWORD	    "1234"
 
 #endif

@@ -15,18 +15,19 @@ double Balanza::leerBalanza(){
 
 bool Balanza::isPesoAlcanzado(){
 	pesoBalanza = leerBalanza();
-	if (pesoRequerido == 0)
-		pesoRequerido = pesoADepositar - pesoBalanza;
-
 	return pesoRequerido > pesoBalanza;
 }
 
 double Balanza::setPesoADepositar(double p){
-	return pesoADepositar = leerBalanza() - p;
+	return pesoRequerido = leerBalanza() - (pesoADepositar = p);
 }
 
 double Balanza::leerPesoBalanza(){
 	return pesoBalanza = leerBalanza();
+}
+
+bool Balanza::isProducto(){
+	return b.get_units(2)>1000;
 }
 /*
 int Balanza::leerPesoBalanza(){

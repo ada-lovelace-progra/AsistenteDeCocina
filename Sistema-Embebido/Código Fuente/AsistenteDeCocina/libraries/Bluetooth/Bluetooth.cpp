@@ -13,7 +13,7 @@ void Bluetooth::begin(int tX, int rX){
     this->enviar(BTNAME); // porque es todo de ada?
     //porque la flaca fue la primer persona en programar
     delay(1000);
-    this->enviar("AT+PSW");
+    this->enviar("AT+PIN");
     this->enviar(PASSWORD);
   }
   conected = false;
@@ -38,11 +38,13 @@ char Bluetooth::leer() {
   if (conected) {
     if (r == BT_DESCONECTADO) {
       conected = false;
+      enviarAccion(BT_DESCONECTADO);
     }
   }
   else {
     if (r == BT_CONECTADO) {
       conected = true;
+      enviarAccion(BT_CONECTADO);
     }
   }
   return r;
@@ -87,6 +89,8 @@ void Bluetooth::enviar(int c){
 void Bluetooth::enviar(short id, long dato){
   this->enviar(id);
   this->enviar(dato);
+  if(id == TIMEOUT_CUMPLIDO)
+    enviarError(id);
 } 
 
 long Bluetooth::leerID(){
@@ -103,4 +107,16 @@ unsigned long Bluetooth::leerCantDatos(){
 
 char Bluetooth::leerEstado(){
     return leer();
+}
+
+void Bluetooth::enviarAccion(int accion){
+  enviar(ACTION_ESTADO+":"+accion);
+}
+
+void Bluetooth::enviarError(int errorCode){
+  enviar(ACTION_ERROR+":"+errorMessage[errorCode]);
+}
+
+void Bluetooth::enviarNotif(int notifCode){
+  enviar(ACTION_NOTIF+":"+notifMessage[notifCode]);
 }
