@@ -219,18 +219,12 @@ public class ServicioBluetooth extends Service {
                         switch (accion) {
                             case ACTION_ERROR:
                                 enviarError(params[1]);
-                                i = new Intent(String.valueOf(ACTION_ERROR));
-                                i.putExtra("Error", params[2]);
-                                sendBroadcast(i);
                                 break;
                             case ACTION_ESTADO:
                                 cambiarEstado(params[1]);
                                 break;
                             case ACTION_NOTIFICACION:
                                 enviarNotificacion(params[1]);
-                                i = new Intent(String.valueOf(ACTION_ERROR));
-                                i.putExtra("Notificacion", params[2]);
-                                sendBroadcast(i);
                                 break;
                             default:
                                 break;
@@ -319,6 +313,7 @@ public class ServicioBluetooth extends Service {
         } else {
             colorEstado = Color.YELLOW;
         }
+        enviarEstado();
     }
 
     public void enviarEstado () {
