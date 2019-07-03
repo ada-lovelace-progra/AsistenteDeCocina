@@ -98,6 +98,7 @@ public class NGActivity extends AppCompatActivity {
 
         intentFilter.addAction(String.valueOf(ServicioBluetooth.ACTION_ERROR));
         intentFilter.addAction(String.valueOf(ServicioBluetooth.ACTION_ESTADO));
+        intentFilter.addAction(String.valueOf(ServicioBluetooth.ACTION_NOTIFICACION));
 
         registerReceiver(sbtReceiver, intentFilter);
 
@@ -188,6 +189,9 @@ public class NGActivity extends AppCompatActivity {
                 case ServicioBluetooth.ACTION_ESTADO:
                     cambiarEstado(intent);
                     break;
+                case ServicioBluetooth.ACTION_NOTIFICACION:
+                    recibidaNotificacion(intent);
+                    break;
             }
 
             Log.d("NGActivity", "Intent del servicio Bluetooth recibido: " + intent.getAction());
@@ -203,5 +207,9 @@ public class NGActivity extends AppCompatActivity {
     protected void cambiarEstado (Intent i) {
         textViewEstado.setText(i.getStringExtra("Estado"));
         textViewEstado.setTextColor(i.getIntExtra("Color", Color.WHITE));
+    }
+
+    private void recibidaNotificacion(Intent i) {
+        mostrarToast(i.getStringExtra("Notificacion"));
     }
 }
