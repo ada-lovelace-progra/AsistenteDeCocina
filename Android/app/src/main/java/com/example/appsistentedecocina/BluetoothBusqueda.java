@@ -253,7 +253,7 @@ public class BluetoothBusqueda extends NGActivity {
                         BluetoothDevice dispositivo =
                                 (BluetoothDevice) deviceListAdapter.getItem(posDeviceList);
 
-                        /* conectamos con el dispositivo Bluetooth */
+                        /* Conectamos con el dispositivo Bluetooth */
                         conectarDispositivoBluetooth(dispositivo.getAddress());
                     }  else if (bondState == BluetoothDevice.BOND_NONE &&
                             bondPrevState == BluetoothDevice.BOND_BONDED) {

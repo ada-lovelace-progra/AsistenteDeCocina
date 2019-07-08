@@ -42,5 +42,4 @@ public class Ingrediente implements Serializable {
         this.id = id;
     }
 
-
 }

@@ -36,7 +36,6 @@ public class Receta implements Serializable {
 
     public Receta(int id, ArrayList<Ingrediente> ingredientes, String nombre) {
         this.id = id;
-        //Collections.copy(this.ingredientes, ingredientes);
         this.ingredientes.addAll(ingredientes);
         this.nombre = nombre;
     }

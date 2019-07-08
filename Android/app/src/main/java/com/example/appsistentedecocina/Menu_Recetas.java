@@ -2,6 +2,7 @@ package com.example.appsistentedecocina;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -30,10 +31,7 @@ public class Menu_Recetas extends NGActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recetas);
 
-        //if(! list_exists(this))
-        //{
-            create_list();
-        //}
+        create_list();
         open_list();
         traerIngredientesActuales();
 
@@ -184,7 +182,6 @@ public class Menu_Recetas extends NGActivity {
         File file = new File(directory, "recetas");
         FileInputStream fis  = null;
         ObjectInput ois  = null;
-        //boolean            keep = true;
 
 
         try {
@@ -193,14 +190,12 @@ public class Menu_Recetas extends NGActivity {
             this.recetas = (ArrayList<Receta>) ois.readObject();
         }
         catch (Exception e) {
-            //keep = false;
-            //Log.e("MyAppName", "failed to suspend", e);
+            Log.d("Menu_Recetas", "error al abrir archivo: " + e.getMessage());
         }
         finally {
             try {
                 if (ois != null)   ois.close();
                 if (fis != null)   fis.close();
-                //if (keep == false) file.delete();
             }
             catch (Exception e) { /* do nothing */ }
         }
@@ -214,21 +209,17 @@ public class Menu_Recetas extends NGActivity {
         File file = new File(directory, "ingredientes");
         FileInputStream fis = null;
         ObjectInput ois = null;
-        //boolean            keep = true;
-
 
         try {
             fis = new FileInputStream(file);
             ois = new ObjectInputStream(fis);
             this.ingredientesActuales = (ArrayList<Ingrediente>) ois.readObject();
         } catch (Exception e) {
-            //keep = false;
-            //Log.e("MyAppName", "failed to suspend", e);
+            Log.d("Menu_Recetas", "error al abrir archivo: " + e.getMessage());
         } finally {
             try {
                 if (ois != null) ois.close();
                 if (fis != null) fis.close();
-                //if (keep == false) file.delete();
             } catch (Exception e) { /* do nothing */ }
         }
     }
@@ -241,20 +232,17 @@ public class Menu_Recetas extends NGActivity {
         File file = new File(directory, "ingredientes");
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        //boolean            keep = true;
 
         try {
             fos = new FileOutputStream(file);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(this.ingredientesActuales);
         } catch (Exception e) {
-            //keep = false;
-            //Log.e("MyAppName", "failed to suspend", e);
+            Log.d("Menu_Recetas", "error al abrir archivo: " + e.getMessage());
         } finally {
             try {
                 if (oos != null) oos.close();
                 if (fos != null) fos.close();
-                //if (keep == false) file.delete();
             } catch (Exception e) { /* do nothing */ }
         }
     }

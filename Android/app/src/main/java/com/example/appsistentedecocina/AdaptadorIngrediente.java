@@ -71,8 +71,7 @@ public class AdaptadorIngrediente extends ArrayAdapter {
                     public void onClick(DialogInterface dialog, int which) {
                         if (!input2.getText().toString().equals("")) {
                             ingActual.setCant(Integer.parseInt(input2.getText().toString()));
-                            //Toast.makeText(mContext, "no se como modificarlo a " + input2.getText().toString() + " gr", Toast.LENGTH_SHORT).show();
-                        }else {
+                        } else {
                             ingList.remove(position);
                         }
                     }

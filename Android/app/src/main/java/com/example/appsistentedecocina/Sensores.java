@@ -79,33 +79,11 @@ public class Sensores extends NGActivity implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-//        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-//            if (event.values[0] >= -SENSOR_SENSITIVITY && event.values[0] <= SENSOR_SENSITIVITY) {
-//                //near
-//                //Toast.makeText(getApplicationContext(), "Pausando el sinfin", Toast.LENGTH_SHORT).show();
-//                tvProximity.setText("Proximidad: Cerca");
-//            } else {
-//                //far
-//                //Toast.makeText(getApplicationContext(), "far", Toast.LENGTH_SHORT).show();
-//                tvProximity.setText("Proximidad: Lejos");
-//            }
-//        }
         String txt = "";
         synchronized (this) {
             switch (event.sensor.getType()) {
-//            case Sensor.TYPE_GYROSCOPE:
-//                txt += "Giroscopo:\n";
-//                txt += "x: " + dosdecimales.format(event.values[0]) + " deg/s \n";
-//                txt += "y: " + dosdecimales.format(event.values[1]) + " deg/s \n";
-//                txt += "z: " + dosdecimales.format(event.values[2]) + " deg/s \n";
-//                giroscopo.setText(txt);
-//                break;
-
                 case Sensor.TYPE_GRAVITY:
                     txt += "Gravedad:\t\t";
-//                    txt += "x: " + event.values[0] + "\n";
-//                    txt += "y: " + event.values[1] + "\n";
-//                    txt += "z: " + event.values[2] + "\n";
 
                     if (event.values[1] < 0){
                         txt += "▼▼▼";
@@ -120,20 +98,17 @@ public class Sensores extends NGActivity implements SensorEventListener {
 
                 case Sensor.TYPE_PROXIMITY:
                     txt += "Proximidad:\t";
-//                    txt += event.values[0] + "\n";
 
                     if (event.values[0] <= 4){
                         txt += "Sinfin Pausado";
                         pausa();
                     }
 
-
                     tvProximity.setText(txt);
                     break;
 
                 case Sensor.TYPE_LIGHT:
                     txt += "Luminosidad:\t";
-//                    txt += event.values[0] + " Lux \n";
 
                     if (event.values[0] <= 5) {
                         txt += "X (encender un led)";
@@ -144,7 +119,6 @@ public class Sensores extends NGActivity implements SensorEventListener {
 
                     tvLuz.setText(txt);
                     break;
-
             }
         }
     }

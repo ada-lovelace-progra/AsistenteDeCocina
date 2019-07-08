@@ -63,9 +63,6 @@ public class ServicioBluetooth extends Service {
     protected String textEstado = "Desconectado";
     protected int colorEstado = Color.RED;
 
-    // thread utilizado para pruebas
-    //private PThread testThread;
-
     @Override
     public void onCreate() {
         Log.d("ServicioBluetooth", "servicio creado.");
@@ -91,9 +88,6 @@ public class ServicioBluetooth extends Service {
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         Log.d("ServicioBluetooth", "servicio iniciando correctamente.");
-
-        /*testThread = new PThread();
-        testThread.start();*/
 
         /* Construimos el mapa de estados */
         mapaEstados.put((int)INACTIVO, "Inactivo");
@@ -322,28 +316,6 @@ public class ServicioBluetooth extends Service {
         i.putExtra("Color", colorEstado);
         sendBroadcast(i);
     }
-
-    /* Utilizado para pruebas */
-    /*class PThread extends Thread {
-        long millis;
-
-        PThread() {
-            millis = System.currentTimeMillis();
-        }
-
-        public void run() {
-
-            while (true) {
-                if (System.currentTimeMillis() - millis > 5000) {
-                    Log.d("ServicioBluetooth", "hola enviado.");
-
-                    cambiarEstado("92");
-
-                    millis = System.currentTimeMillis();
-                }
-            }
-        }
-    }*/
 
     class SocketThread extends Thread {
         BluetoothDevice device;

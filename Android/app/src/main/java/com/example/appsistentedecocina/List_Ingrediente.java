@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -54,8 +55,6 @@ public class List_Ingrediente extends NGActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Snackbar.make(view, "No esta implementado, bancame", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Nuevo Ingrediente");
 
@@ -87,10 +86,8 @@ public class List_Ingrediente extends NGActivity {
                 layout.addView(id);
                 layout.addView(input3);
 
-
                 //lo seteo
                 builder.setView(layout);
-
 
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -122,9 +119,6 @@ public class List_Ingrediente extends NGActivity {
             create_list();
         }
         open_list();
-
-//        listaIngredientes.add(new Ingrediente("arroz", 150));
-//        listaIngredientes.add(new Ingrediente("yerba", 500));
 
         adapter = new AdaptadorIngrediente(this, listaIngredientes);
         listview.setAdapter(adapter);
@@ -161,9 +155,6 @@ public class List_Ingrediente extends NGActivity {
         file.setReadable(true);
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        //listaIngredientes.add(new Ingrediente("arroz", 150));
-        //listaIngredientes.add(new Ingrediente("yerba", 500));
-
 
         try {
             fos = new FileOutputStream(file);
@@ -182,21 +173,17 @@ public class List_Ingrediente extends NGActivity {
         File file = new File(directory, "ingredientes");
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
-        //boolean            keep = true;
-
 
         try {
             fos = new FileOutputStream(file);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(this.listaIngredientes);
         } catch (Exception e) {
-            //keep = false;
-            //Log.e("MyAppName", "failed to suspend", e);
+            Log.d("List_Ingrediente", "error al abrir archivo: " + e.getMessage());
         } finally {
             try {
                 if (oos != null) oos.close();
                 if (fos != null) fos.close();
-                //if (keep == false) file.delete();
             } catch (Exception e) { /* do nothing */ }
         }
 
@@ -207,21 +194,17 @@ public class List_Ingrediente extends NGActivity {
         File file = new File(directory, "ingredientes");
         FileInputStream fis = null;
         ObjectInput ois = null;
-        //boolean            keep = true;
-
 
         try {
             fis = new FileInputStream(file);
             ois = new ObjectInputStream(fis);
             this.listaIngredientes = (ArrayList<Ingrediente>) ois.readObject();
         } catch (Exception e) {
-            //keep = false;
-            //Log.e("MyAppName", "failed to suspend", e);
+            Log.d("List_Ingrediente", "error al abrir archivo: " + e.getMessage());
         } finally {
             try {
                 if (ois != null) ois.close();
                 if (fis != null) fis.close();
-                //if (keep == false) file.delete();
             } catch (Exception e) { /* do nothing */ }
         }
     }
