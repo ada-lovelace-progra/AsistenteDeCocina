@@ -16,6 +16,9 @@ import java.text.DecimalFormat;
 
 public class Sensores extends NGActivity implements SensorEventListener {
 
+    public static final int LIMITE_LUZ = 5;
+    public static final int LIMITE_PROXIMIDAD = 4;
+    public static final int LIMITE_GRAVEDAD = 0;
     private SensorManager mSensorManager;
 
     private Button playpause;
@@ -85,7 +88,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
                 case Sensor.TYPE_GRAVITY:
                     txt += "Gravedad:\t\t";
 
-                    if (event.values[1] < 0){
+                    if (event.values[1] < LIMITE_GRAVEDAD){
                         txt += "▼▼▼";
                         invertirSentido();
                     }
@@ -99,7 +102,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
                 case Sensor.TYPE_PROXIMITY:
                     txt += "Proximidad:\t";
 
-                    if (event.values[0] <= 4){
+                    if (event.values[0] <= LIMITE_PROXIMIDAD){
                         txt += "Sinfin Pausado";
                         pausa();
                     }
@@ -110,7 +113,7 @@ public class Sensores extends NGActivity implements SensorEventListener {
                 case Sensor.TYPE_LIGHT:
                     txt += "Luminosidad:\t";
 
-                    if (event.values[0] <= 5) {
+                    if (event.values[0] <= LIMITE_LUZ) {
                         txt += "X (encender un led)";
                         encenderLed();
                     } else {

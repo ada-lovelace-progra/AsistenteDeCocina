@@ -160,6 +160,10 @@ public class ServicioBluetooth extends Service {
     }
 
     private class ConnectedThread extends Thread {
+        public static final int CANT_BYTES_NUM = 4;
+        public static final int TAM_BYTE = 8;
+        public static final int CANT_PARTES_MENSAJE = 2;
+        public static final int TAM_BUFFER = 1024;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
@@ -187,7 +191,7 @@ public class ServicioBluetooth extends Service {
         public void run() {
             long millis = System.currentTimeMillis();
             Log.d("ServicioBluetooth", "hilo secundario en ejecución.");
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[TAM_BUFFER];
             String stringBuffer = new String();
             int bytes;
 
@@ -206,7 +210,7 @@ public class ServicioBluetooth extends Service {
                         stringBuffer = stringBuffer.substring(index);
 
                         String params[] = cadena.split(":");
-                        if (params.length == 2) {
+                        if (params.length == CANT_PARTES_MENSAJE) {
                             // el primer valor es la acción
                             int accion = Integer.valueOf(params[0]);
                             switch (accion) {
@@ -248,12 +252,11 @@ public class ServicioBluetooth extends Service {
         }
 
         public void writeNum (int num) {
-            byte[] byteBuffer = new byte[4];
+            byte[] byteBuffer = new byte[CANT_BYTES_NUM];
 
-            byteBuffer[0] = (byte) (num >> 24);
-            byteBuffer[1] = (byte) (num >> 16);
-            byteBuffer[2] = (byte) (num >> 8);
-            byteBuffer[3] = (byte) (num /*>> 0*/);
+            for (int i = 0; i < CANT_BYTES_NUM; i++) {
+                byteBuffer[i] = (byte) (num >> (TAM_BYTE * (CANT_BYTES_NUM - 1 - i)));
+            }
 
             try {
                 mmOutStream.write(byteBuffer);

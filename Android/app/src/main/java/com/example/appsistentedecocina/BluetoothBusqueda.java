@@ -28,6 +28,7 @@ import java.util.List;
 
 public class BluetoothBusqueda extends NGActivity {
 
+    public static final int REQUEST_CODE = 1000;
     private Switch switchBluetooth;
     private Button buttonActualizar;
     private ProgressDialog progressDialog;
@@ -123,7 +124,7 @@ public class BluetoothBusqueda extends NGActivity {
         if (isChecked) {
             if (!adaptadorBluetooth.isEnabled()) {
                 Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(intent, 1000);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         } else {
             adaptadorBluetooth.disable();

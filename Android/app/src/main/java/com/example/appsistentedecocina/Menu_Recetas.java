@@ -17,8 +17,20 @@ import java.util.ArrayList;
 
 public class Menu_Recetas extends NGActivity {
 
+    public static final int CANT_BTNS = 4;
+    public static final int ID_RECETA_ARROZ = 1;
+    public static final int ID_RECETA_MOROS = 2;
+    public static final int ID_RECETA_LENTEJAS = 3;
+    public static final int ID_RECETA_ARROZYLENTEJAS = 4;
+    public static final int DEFAUL_CANT_ARROZ = 90;
+    public static final int ID_INGREDIENTE_ARROZ = 1;
+    public static final int DEFAULT_CANT_POROTOS = 40;
+    public static final int ID_INGREDIENTE_POROTOS = 2;
+    public static final int ID_INGREDIENTE_LENTEJAS = 3;
+    public static final int DEFAULT_CANT_LENTEJAS = 50;
     private ArrayList<Receta> recetas = new ArrayList<Receta>();
 
+    private Button[] btn;
     private Button btn1;
     private Button btn2;
     private Button btn3;
@@ -36,42 +48,25 @@ public class Menu_Recetas extends NGActivity {
         traerIngredientesActuales();
 
         //inicio los botones
-        btn1 = (Button) findViewById(R.id.receta1);
-        btn1.setText( recetas.get(0).getNombre());
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                enviarReceta(recetas.get(0));
-            }
-        });
+        for (int i = 0; i < CANT_BTNS; i++) {
+            int id = getResources().getIdentifier("receta" + i, "id", getPackageName());
 
-        btn2 = (Button) findViewById(R.id.receta2);
-        btn2.setText( recetas.get(1).getNombre());
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                enviarReceta(recetas.get(1));
-            }
-        });
+            btn[i] = findViewById(id);
+            btn[i].setText(recetas.get(i).getNombre());
+            btn[i].setOnClickListener(new View.OnClickListener() {
+                int recetaNum = 0;
 
-        btn3 = (Button) findViewById(R.id.receta3);
-        btn3.setText( recetas.get(2).getNombre());
-        btn3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                enviarReceta(recetas.get(2));
-            }
-        });
+                public View.OnClickListener init (int num) {
+                    recetaNum = num;
+                    return this;
+                }
 
-        btn4 = (Button) findViewById(R.id.receta4);
-        btn4.setText( recetas.get(3).getNombre());
-        btn4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                enviarReceta(recetas.get(3));
-            }
-        });
-
+                @Override
+                public void onClick(View view) {
+                    enviarReceta(recetas.get(recetaNum));
+                }
+            }.init(i));
+        }
     }
 
     /**
@@ -135,19 +130,19 @@ public class Menu_Recetas extends NGActivity {
         ObjectOutputStream oos  = null;
 
         ArrayList<Ingrediente> listaIngredientes = new ArrayList<Ingrediente>();
-        listaIngredientes.add(new Ingrediente("arroz", 90, 1));
-        recetas.add(new Receta(1, listaIngredientes,"Arroz"));
+        listaIngredientes.add(new Ingrediente("arroz", DEFAUL_CANT_ARROZ, ID_INGREDIENTE_ARROZ));
+        recetas.add(new Receta(ID_RECETA_ARROZ, listaIngredientes,"Arroz"));
 
-        listaIngredientes.add(new Ingrediente("porotos", 40, 2));
-        recetas.add(new Receta(2, listaIngredientes,"Moros y Cristianos"));
+        listaIngredientes.add(new Ingrediente("porotos", DEFAULT_CANT_POROTOS, ID_INGREDIENTE_POROTOS));
+        recetas.add(new Receta(ID_RECETA_MOROS, listaIngredientes,"Moros y Cristianos"));
 
         listaIngredientes.clear();
 
-        listaIngredientes.add(new Ingrediente("lentejas",50, 3));
-        recetas.add(new Receta(3, listaIngredientes,"Lentejas solas"));
+        listaIngredientes.add(new Ingrediente("lentejas", DEFAULT_CANT_LENTEJAS, ID_INGREDIENTE_LENTEJAS));
+        recetas.add(new Receta(ID_RECETA_LENTEJAS, listaIngredientes,"Lentejas solas"));
 
-        listaIngredientes.add(new Ingrediente("Arroz",90, 1));
-        recetas.add(new Receta(4, listaIngredientes,"Arroz con Lentejas"));
+        listaIngredientes.add(new Ingrediente("Arroz",DEFAUL_CANT_ARROZ, ID_INGREDIENTE_ARROZ));
+        recetas.add(new Receta(ID_RECETA_ARROZYLENTEJAS, listaIngredientes,"Arroz con Lentejas"));
 
         try {
             fos = new FileOutputStream(file);
