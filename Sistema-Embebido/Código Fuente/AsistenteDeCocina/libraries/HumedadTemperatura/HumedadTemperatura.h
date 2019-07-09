@@ -20,7 +20,7 @@ private:
   DHT dht;
   float temp;
   float hum;
-  int lastRead=-9999;
+  int lastRead = DHT_DEFAULT_LASTREAD;
 };
  
 #endif

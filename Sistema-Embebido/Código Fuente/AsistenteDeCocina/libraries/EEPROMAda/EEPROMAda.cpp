@@ -16,7 +16,7 @@ char* EEPROMAda::leerID_DISP() {
   if(idDisp)
     return idDisp;
 
-  char* nombre = (char *)malloc(99);
+  char* nombre = (char *) malloc(EEPROM_SIZE_MALLOC);
   int index = 0;
 
   char c = 0;

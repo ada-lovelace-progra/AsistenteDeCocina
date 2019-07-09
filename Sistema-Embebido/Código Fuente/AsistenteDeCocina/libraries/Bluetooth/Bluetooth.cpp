@@ -2,17 +2,15 @@
 
 void Bluetooth::begin(int tX, int rX){
   Serial.println("Construyendo Bluetooth");
-  BTSERIAL.begin(9600);
-  if(tX != 14 || rX != 15)
+  BTSERIAL.begin(BT_RATE);
+  if(tX != BT_SERIAL3_PIN_TX || rX != BT_SERIAL3_PIN_RX)
     Serial.print("LOS PINS ENVIADOS NO PERTENECEN A Serial3");
   
-  if(!BT_IS_SET){
+  if(!BT_IS_SET) {
     this->enviar("AT");
-    delay(1000);
     this->enviar("AT+NAME");
     this->enviar(BTNAME); // porque es todo de ada?
     //porque la flaca fue la primer persona en programar
-    delay(1000);
     this->enviar("AT+PIN");
     this->enviar(PASSWORD);
   }
@@ -71,7 +69,7 @@ long Bluetooth::leerNbytes(int c){
   if(!c)
     return (short)(l);
 
-  return (l << (8*c)) + this->leerNbytes(c); 
+  return (l << (TAM_BYTE*c)) + this->leerNbytes(c); 
 }
 
 void Bluetooth::enviar(String c){
@@ -94,15 +92,15 @@ void Bluetooth::enviar(short id, long dato){
 } 
 
 long Bluetooth::leerID(){
-  return this->leerNbytes(4);
+  return this->leerNbytes(BT_BYTES_ID);
 }
 
 unsigned long Bluetooth::leerCantidad(){
-  return this->leerNbytes(4);
+  return this->leerNbytes(BT_BYTES_CANT);
 }
 
 unsigned long Bluetooth::leerCantDatos(){
-  return this->leerNbytes(4);
+  return this->leerNbytes(BT_BYTES_CANTDATOS);
 }
 
 char Bluetooth::leerEstado(){

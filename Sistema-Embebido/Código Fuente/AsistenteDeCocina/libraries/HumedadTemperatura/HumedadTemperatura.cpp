@@ -1,6 +1,6 @@
 #include <HumedadTemperatura.h>
 
-HumedadTemperatura::HumedadTemperatura() : dht(DHT(tem_hum, DHT11)){}
+HumedadTemperatura::HumedadTemperatura() : dht(DHT(TEM_HUM, DHT11)){}
 
 void HumedadTemperatura::begin(int pin){
 	Serial.println("Construyendo HumedadTemperatura");
@@ -19,7 +19,7 @@ float HumedadTemperatura::leerTemperatura(){
 }
 
 void HumedadTemperatura::actualizarDatos(){
-	if(millis() - this->lastRead < 2000)
+	if(millis() - this->lastRead < DHT_TIEMPO_ACTUALIZACION)
 		return;
 
 	lastRead = millis();

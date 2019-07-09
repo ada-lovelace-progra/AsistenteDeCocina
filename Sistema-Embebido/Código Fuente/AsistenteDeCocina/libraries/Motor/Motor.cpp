@@ -13,12 +13,12 @@ void Motor::begin(int pinSF1, int pinSF2, int pinSFP){
 }
 
 float Motor::operator++(int){
-	velocidad+=(float)0.05;
+	velocidad += (float)MOTOR_VELOCIDAD_MOD;
 	return setVelocidad(velocidad);
 }
 
 float Motor::operator--(int){
-	velocidad-=(float)0.05;
+	velocidad -= (float)MOTOR_VELOCIDAD_MOD;
 	return setVelocidad(velocidad);
 }
 
@@ -26,13 +26,13 @@ float Motor::operator=(float mode){
 	return setVelocidad(mode);
 }
 
-float Motor::setVelocidad(float mode){
-	this->velocidad=mode>1?1:mode;
-	this->velocidad=mode<-1?-1:mode;
+float Motor::setVelocidad(float mode) {
+	this->velocidad = mode > MOTOR_LIMITE_VEL_TOP ? MOTOR_LIMITE_VEL_TOP : mode;
+	this->velocidad = mode < MOTOR_LIMITE_VEL_BOT ? MOTOR_LIMITE_VEL_BOT : mode;
 
-	if(mode>0.05)
+	if(mode > MOTOR_VELOCIDAD_MOD)
 		horario(mode);
-	else if(mode<-0.05)
+	else if(mode < -MOTOR_VELOCIDAD_MOD)
 		antihorario(mode);
 	else 
 		parar();
@@ -43,13 +43,13 @@ float Motor::setVelocidad(float mode){
 void Motor::horario(float mode){
 	digitalWrite(this->pinSF1,HIGH); 
 	digitalWrite(this->pinSF2,LOW); 
-	analogWrite(this->pinSFP,mode*254); 
+	analogWrite(this->pinSFP, mode * MOTOR_MULT_VELOCIDAD); 
 }
 
 void Motor::antihorario(float mode){
 	digitalWrite(this->pinSF1,LOW);
 	digitalWrite(this->pinSF2,HIGH); 
-	analogWrite(this->pinSFP,mode*(-254)); 
+	analogWrite(this->pinSFP, mode * (-MOTOR_MULT_VELOCIDAD)); 
 }
 
 void Motor::parar(){

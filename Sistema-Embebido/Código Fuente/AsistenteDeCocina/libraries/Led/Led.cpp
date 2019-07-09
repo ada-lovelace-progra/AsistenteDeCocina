@@ -5,7 +5,6 @@ void Led::begin(int i){
 	pin=i;
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, HIGH);
-	delay(250);
 	digitalWrite(pin, LOW);
 }
 

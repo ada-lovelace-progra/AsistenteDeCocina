@@ -13,31 +13,45 @@
     plays a pinBuzzer buzzer rendition of the song.
 */
 
-#define  a3f    208     // 208 Hz
-#define  b3f    233     // 233 Hz
-#define  b3     247     // 247 Hz
-#define  c4     261     // 261 Hz MIDDLE C
-#define  c4s    277     // 277 Hz
-#define  e4f    311     // 311 Hz    
-#define  f4     349     // 349 Hz 
-#define  a4f    415     // 415 Hz  
-#define  b4f    466     // 466 Hz 
-#define  b4     493     // 493 Hz 
-#define  c5     523     // 523 Hz 
-#define  c5s    554     // 554 Hz
-#define  e5f    622     // 622 Hz  
-#define  f5     698     // 698 Hz 
-#define  f5s    740     // 740 Hz
-#define  a5f    831     // 831 Hz 
+#define  A3F    208     // 208 Hz
+#define  B3F    233     // 233 Hz
+#define  B3     247     // 247 Hz
+#define  C4     261     // 261 Hz MIDDLE C
+#define  C4S    277     // 277 Hz
+#define  E4F    311     // 311 Hz    
+#define  F4     349     // 349 Hz 
+#define  A4F    415     // 415 Hz  
+#define  B4F    466     // 466 Hz 
+#define  B4     493     // 493 Hz 
+#define  C5     523     // 523 Hz 
+#define  C5S    554     // 554 Hz
+#define  E5F    622     // 622 Hz  
+#define  F5     698     // 698 Hz 
+#define  F5S    740     // 740 Hz
+#define  A5F    831     // 831 Hz 
 
-#define rest    -1
+#define REST    -1
+
+#define BEAT_LENGTH       100
+#define BEAT_SEPARATION   0.3
+#define BEAT_MULT         2
+#define INIT_PART         4
+#define INIT_SONG         0
+#define INIT_LYRIC        0
+#define PART_INTRO1       1
+#define PART_INTRO1       2
+#define PART_VERSE1       3
+#define PART_VERSE2       5
+#define PART_CHORUS1      4
+#define PART_CHORUS2      6
+#define PART_END          7
 
 // change these pins according to your setup
 int pinBuzzer;
-int led = 9;
+int led = LED_CANT_NO_DISP;
 
-volatile int beatlength = 100; // determines tempo
-float beatseparationconstant = 0.3;
+volatile int beatlength = BEAT_LENGTH; // determines tempo
+float beatseparationconstant = BEAT_SEPARATION;
 
 int a; // part index
 unsigned int b; // song index
@@ -48,7 +62,7 @@ boolean flag; // play/pause
 // Parts 1 and 2 (Intro)
 
 int song1_intro_melody[] =
-{c5s, e5f, e5f, f5, a5f, f5s, f5, e5f, c5s, e5f, rest, a4f, a4f};
+{C5S, E5F, E5F, F5, A5F, F5S, F5, E5F, C5S, E5F, REST, A4F, A4F};
 
 int song1_intro_rhythmn[] =
 {6, 10, 6, 6, 1, 1, 1, 1, 6, 10, 4, 2, 10};
@@ -56,12 +70,12 @@ int song1_intro_rhythmn[] =
 // Parts 3 or 5 (Verse 1)
 
 int song1_verse1_melody[] =
-{ rest, c4s, c4s, c4s, c4s, e4f, rest, c4, b3f, a3f,
-  rest, b3f, b3f, c4, c4s, a3f, a4f, a4f, e4f,
-  rest, b3f, b3f, c4, c4s, b3f, c4s, e4f, rest, c4, b3f, b3f, a3f,
-  rest, b3f, b3f, c4, c4s, a3f, a3f, e4f, e4f, e4f, f4, e4f,
-  c4s, e4f, f4, c4s, e4f, e4f, e4f, f4, e4f, a3f,
-  rest, b3f, c4, c4s, a3f, rest, e4f, f4, e4f
+{ REST, C4S, C4S, C4S, C4S, E4F, REST, C4, B3F, A3F,
+  REST, B3F, B3F, C4, C4S, A3F, A4F, A4F, E4F,
+  REST, B3F, B3F, C4, C4S, B3F, C4S, E4F, REST, C4, B3F, B3F, A3F,
+  REST, B3F, B3F, C4, C4S, A3F, A3F, E4F, E4F, E4F, F4, E4F,
+  C4S, E4F, F4, C4S, E4F, E4F, E4F, F4, E4F, A3F,
+  REST, B3F, C4, C4S, A3F, REST, E4F, F4, E4F
 };
 
 int song1_verse1_rhythmn[] =
@@ -85,14 +99,14 @@ String lyrics_verse1[] =
 // Parts 4 or 6 (Chorus)
 
 int song1_chorus_melody[] =
-{ b4f, b4f, a4f, a4f,
-  f5, f5, e5f, b4f, b4f, a4f, a4f, e5f, e5f, c5s, c5, b4f,
-  c5s, c5s, c5s, c5s,
-  c5s, e5f, c5, b4f, a4f, a4f, a4f, e5f, c5s,
-  b4f, b4f, a4f, a4f,
-  f5, f5, e5f, b4f, b4f, a4f, a4f, a5f, c5, c5s, c5, b4f,
-  c5s, c5s, c5s, c5s,
-  c5s, e5f, c5, b4f, a4f, rest, a4f, e5f, c5s, rest
+{ B4F, B4F, A4F, A4F,
+  F5, F5, E5F, B4F, B4F, A4F, A4F, E5F, E5F, C5S, C5, B4F,
+  C5S, C5S, C5S, C5S,
+  C5S, E5F, C5, B4F, A4F, A4F, A4F, E5F, C5S,
+  B4F, B4F, A4F, A4F,
+  F5, F5, E5F, B4F, B4F, A4F, A4F, A5F, C5, C5S, C5, B4F,
+  C5S, C5S, C5S, C5S,
+  C5S, E5F, C5, B4F, A4F, REST, A4F, E5F, C5S, REST
 };
 
 int song1_chorus_rhythmn[] =
@@ -119,17 +133,17 @@ void Extras::begin(int pinBuzzer)
 {
 	this->pinBuzzer = pinBuzzer;
   flag = true;
-  a = 4;
-  b = 0;
-  c = 0;
+  a = INIT_PART;
+  b = INIT_SONG;
+  c = INIT_LYRIC;
 }
 
 void Extras::exec(){
   int notelength = 0;
-  if (a == 1 || a == 2) { // Intro
+  if (a == PART_INTRO1 || a == PART_INTRO2) { // Intro
     // intro
     notelength = beatlength * song1_intro_rhythmn[b];
-    if (song1_intro_melody[b] > 0) { // if not a rest, play note
+    if (song1_intro_melody[b] > 0) { // if not a REST, play note
       digitalWrite(led, HIGH);
       tone(pinBuzzer, song1_intro_melody[b], notelength);
     }
@@ -140,9 +154,9 @@ void Extras::exec(){
       c = 0;
     }
   }
-  else if (a == 3 || a == 5) { // Verse 1
+  else if (a == PART_VERSE1 || a == PART_VERSE2) { // Verse 1
     // verse
-    notelength = beatlength * 2 * song1_verse1_rhythmn[b];
+    notelength = beatlength * BEAT_MULT * song1_verse1_rhythmn[b];
     if (song1_verse1_melody[b] > 0) {
       digitalWrite(led, HIGH);
       Serial.print(lyrics_verse1[c]);
@@ -156,7 +170,7 @@ void Extras::exec(){
       c = 0;
     }
   }
-  else if (a == 4 || a == 6) { //chorus
+  else if (a == PART_CHORUS1 || a == PART_CHORUS2) { //chorus
     // chorus
     notelength = beatlength * song1_chorus_rhythmn[b];
     if (song1_chorus_melody[b] > 0) {
@@ -173,11 +187,9 @@ void Extras::exec(){
       c = 0;
     }
   }
-  delay(notelength); // necessary because pinBuzzer is on independent timer
   noTone(pinBuzzer);
-  digitalWrite(led=((led+1)%5)+9 , LOW);
-  delay(notelength * beatseparationconstant); // create separation between notes
-  if (a == 7) { // loop back around to beginning of song
-    a = 1;
+  digitalWrite(led, LOW);
+  if (a == PART_END) { // loop back around to beginning of song
+    a = PART_INTRO1;
   }
 } 

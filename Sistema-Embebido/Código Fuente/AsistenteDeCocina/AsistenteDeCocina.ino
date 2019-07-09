@@ -51,34 +51,31 @@ unsigned long debugTime = 0;
 char lastAccion2 = accion - 1;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(DEFAULT_RATE);
   serialD("arranca");
 
-  pinMode(presencia           , INPUT);
+  pinMode(PRESENCIA, INPUT);
   // Actuadores
-  pinMode(zumbador            , OUTPUT);
+  pinMode(ZUMBADOR, OUTPUT);
 
+  pinMode(DEBUG_OUT, OUTPUT);
+  pinMode(DEBUG_IN, INPUT);
 
-  pinMode(debugOut, OUTPUT);
-  pinMode(debugIn, INPUT);
-
-  digitalWrite(debugOut, HIGH);
+  digitalWrite(DEBUG_OUT, HIGH);
 
   sinFin.begin(SF1, SF2, SFP);
-  bal.begin(balDt, balSck);
-  ht.begin(tem_hum);
+  bal.begin(BAL_DT, BAL_SCK);
+  ht.begin(TEM_HUM);
   eeada.begin();
-  bt.begin(btTx, btRx);
-  extras.begin(zumbador);
+  bt.begin(BT_TX, BT_RX);
+  extras.begin(ZUMBADOR);
 
-  Encendido.begin(ledEncendido);
-  ConectadoBT.begin(ledConectadoBT);
-  Sirviendo.begin(ledSirviendo);
-  Disponible.begin(ledDisponible);
-  CantNoDisponible.begin(ledCantNoDisponible);
-  tone(zumbador, FRECUENCIA, 200);
-
-  //while (digitalRead(pulsadorOn));  //opcional para poner una tecla para que arranque
+  Encendido.begin(LED_ENCENDIDO);
+  ConectadoBT.begin(LED_CONECTADO_BT);
+  Sirviendo.begin(LED_SIRVIENDO);
+  Disponible.begin(LED_DISPONIBLE);
+  CantNoDisponible.begin(LED_CANT_NO_DISP);
+  tone(ZUMBADOR, FRECUENCIA, TONE_DURACION);
 
   Encendido = HIGH;
 }
@@ -138,7 +135,6 @@ void estados() {
     debug();
     if (bal.isProducto()) {
       serialD("hay algo en la balanza");
-      //validarProducto(idProducto[cantDatos])// se debe verificar que el producto sea el correcto mediante sensores NFC, quedan pendientes por falta de tiempo y financiamiento
       accion = SENSAR_PESO;
     }
 
@@ -154,7 +150,6 @@ void estados() {
   } else if (accion == BAJAR_BRAZO) {
     debug();
     //quedan pendientes por falta de tiempo y financiamiento
-    delay(600);
     accion = SENSAR_PESO_SINFIN;
 
   } else if (accion == SENSAR_PESO_SINFIN) {
@@ -163,12 +158,11 @@ void estados() {
     accion = EXTRAER_PRODUCTO;
 
   } else if (accion == EXTRAER_PRODUCTO) {
-    if (digitalRead(presencia)) {
+    if (digitalRead(PRESENCIA)) {
       sinFin = 0;
       errorCode = ERROR_NO_TACHO;
       serialD("NO tacho");
     } else {
-
       debug();
       sinFin = 1;
       
@@ -187,7 +181,6 @@ void estados() {
   } else if (accion == SUBIR_BRAZO) {
     debug();
     //quedan pendientes por falta de tiempo y financiamiento
-    delay(600);
     accion = ESPERAR_NO_PRODUCTO;
 
   } else if (accion == ESPERAR_NO_PRODUCTO) {
@@ -206,7 +199,6 @@ void estados() {
     CantNoDisponible = HIGH;
     char idprod = idProducto[cantDatos];
     bt.enviar(CANT_NO_DISP, idprod);
-    delay(1000);
     CantNoDisponible = LOW;
     accion = INACTIVO;
     errorCode = CANT_NO_DISP;
@@ -276,15 +268,15 @@ void interrupciones() {
     return;
   else {
     if (!vecesEnInterrupcion)
-      vecesEnInterrupcion = 1000;
+      vecesEnInterrupcion = CICLOS_INTERRUPCION;
 
     if (!--vecesEnInterrupcion)
       interrupt = NO_INTERRUPT;
 
     serialD((String)"entra en interrupccion: " + interrupt + " falta " + vecesEnInterrupcion + " ciclos");
     if (interrupt == ENCENDER_LED) {
-      if (vecesEnInterrupcion > 30)
-        vecesEnInterrupcion = 29;
+      if (vecesEnInterrupcion > LIM_INTERRUPCION)
+        vecesEnInterrupcion = LIM_INTERRUPCION - 1;
       extras.exec();
     } else if (interrupt == GIRAR_SINFIN_HORARIO) {
       if (vecesEnInterrupcion >= 1)
@@ -340,34 +332,34 @@ void alertas() {
   Sirviendo = accion == EXTRAER_PRODUCTO;
 
   if (!bt.isConected())
-    ConectadoBT = (millis() % 450 > 200);
+    ConectadoBT = (millis() % TIEMPO_LED_BT > LIMITE_LED_BT);
   else
     ConectadoBT = HIGH;
 
   if (interrupt != NO_INTERRUPT)
-    Encendido = (int)(millis() / 350) % 2;
+    Encendido = (int)(millis() / TIEMPO_LED_ON) % 2;
   else
     Encendido = HIGH;
 
-  Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / 250) % 2);
+  Disponible = (accion == INACTIVO ? HIGH : (int)(millis() / TIEMPO_LED_DISP) % 2);
 
-  if (zumbadorTime - millis() < tiempoZumbador) {
-    if (millis() % (zumbadorTime / 4) < (zumbadorTime / 4) * 0.7)
-      tone(zumbador, FRECUENCIA);
+  if (ZUMBADOR_TIME - millis() < TIEMPO_ZUMBADOR) {
+    if (millis() % (ZUMBADOR_TIME / DIV_ZUMBADOR) < (ZUMBADOR_TIME / DIV_ZUMBADOR) * MULT_ZUMBADOR)
+      tone(ZUMBADOR, FRECUENCIA);
     else
-      noTone(zumbador);
+      noTone(ZUMBADOR);
   }
   else {
-    noTone(zumbador);
+    noTone(ZUMBADOR);
   }
 }
 
 //////////////////////////// DEBUG
 bool isInDebug() {
-  return digitalRead(debugIn);
+  return digitalRead(DEBUG_IN);
 }
 
-double vecesporloop = 10000;
+double vecesporloop = CICLOS_ALERTAS;
 unsigned long debugLoopTimes = vecesporloop;
 void debugLoop() {
   if (isInDebug() && !debugLoopTimes--) {

@@ -30,7 +30,7 @@ public:
 
 private:
   bool conected;
-  bool serial=false;
+  bool serial = false;
   String errorMessage[3] = {(String)"Cantidad no disponile de producto",
                             (String)"Se espero por demasiado tiempo y se retorno a inactivo",
                             (String)"No se detecto un recipiente donde depositar el producto"};
